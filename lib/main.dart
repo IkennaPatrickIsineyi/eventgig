@@ -485,20 +485,6 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   prefs = await SharedPreferences.getInstance();
   if (!kIsWeb) {
-    /* await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform);
-    try {
-      await Firebase.initializeApp(
-        name: 'Eventgig',
-        options: FirebaseOptions(
-            apiKey: "AIzaSyB85pXLXFfhy9KS7rVh-dbZxz7xCIxEALs",
-            appId: "1:326744182997:android:0784bfcdaed5c4e661925c",
-            messagingSenderId: "326744182997",
-            projectId: "eventgig-b9912"),
-      );
-    } catch (_) {
-      print('already exists');
-    } */
     //await Firebase.initializeApp();
 
     print((deb++).toString());
@@ -534,168 +520,11 @@ Future<void> main() async {
       currentRoute = prefs.getString('currentRoute') as String;
       print((deb++).toString());
     }
-
-    /* channel = notif.AndroidNotificationChannel(
-      'high_important_channel',
-      'High Important Notifications',
-      description: 'This channel is used for important notifications.',
-      importance: notif.Importance.max,
-    );
-
-    await notificationPlug
-        .resolvePlatformSpecificImplementation<
-            notif.AndroidFlutterLocalNotificationsPlugin>()!
-        .createNotificationChannel(channel); */
   }
 
   runApp(MyApp());
 }
 
-/* void onStart() async {
-  print('onstart');
-  WidgetsFlutterBinding.ensureInitialized();
-  final service = backService.FlutterBackgroundService();
-  //HttpOverrides.global = new DevHttpOverrides();
-  service.setAutoStartOnBootMode(false);
-
-  String usern = "";
-  String sessid = "";
-
-  /* String usern = "i";
-  String sessid =
-      "78377857c12ce06132937b50c297a7be48e5378a8d0e50d7c931e9f55c06422f";
- */
-  service.onDataReceived.listen((event) async {
-    print('processing new received message from ui to service');
-    if (event!['action'] == 'setAsForeground') {
-      service.setForegroundMode(true);
-      return;
-    }
-    if (event['action'] == 'setAsBackground') {
-      service.setForegroundMode(false);
-      return;
-    }
-    if (event['action'] == 'stopService') {
-      service.stopBackgroundService();
-      return;
-    }
-
-    if (event['action'] == 'loggedIn') {
-      //SharedPreferences prefs = await SharedPreferences.getInstance();
-      usern = event['username'];
-      sessid = event['sessionToken'];
-    }
-  });
-
-  if (usern.isEmpty || sessid.isEmpty) {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    usern = prefs.getString('username') as String;
-    sessid = prefs.getString('sessionToken') as String;
-  }
-
-  service.setForegroundMode(false);
-  int notifID = 2;
-
-  Timer.periodic(Duration(seconds: 3), (timer) async {
-    print('timer called');
-    //if (!(await service.isServiceRunning())) timer.cancel();
-
-    //if (sessionToken.isNotEmpty) {
-    var address = Uri.parse(domain + 'getunseen');
-
-    var content = {
-      'username': usern,
-      'sessionid': sessid,
-    };
-
-    print('getunseen called... content passed');
-
-    print(address);
-    print(content);
-
-    var result;
-
-    List notifyContent;
-
-    bool networkErr = false;
-    final value =
-        await http.Client().post(address, body: content).catchError((error) {
-      networkErr = true;
-      return http.Response(jsonEncode({'value': 'error'}), 400);
-    });
-
-    if (value.statusCode == 200) {
-      print('ok');
-      result = jsonDecode(value.body);
-      print(result);
-      if (result['status'] == 'valid') {
-        print('Number of Unseen Notifications retrieved');
-        //unSeen = result['unseen'];
-        backService.FlutterBackgroundService().sendData({
-          'action': "unSeen",
-          'unSeen': result['unseen'],
-        });
-        /* if (result['empty'] == 'yes') {
-          print('no undelivered notifications');
-        } else if (result['empty'] == 'no') {
-          print('some  undelivered notifications');
-
-          //service.setForegroundMode(true);
-          notifyContent = result['notification'];
-          notif.FlutterLocalNotificationsPlugin notificationPlug =
-              notif.FlutterLocalNotificationsPlugin();
-
-          notif.AndroidInitializationSettings initSettingAndroid =
-              notif.AndroidInitializationSettings('@mipmap/ic_launcher');
-
-          notif.InitializationSettings initSettings =
-              notif.InitializationSettings(android: initSettingAndroid);
-
-          notificationPlug.initialize(initSettings,
-              onSelectNotification: (payload) {
-            print(payload);
-          });
-
-          notif.AndroidNotificationDetails androidNotif =
-              notif.AndroidNotificationDetails('1', 'myChannel',
-                  channelDescription: 'Gets new changes',
-                  priority: notif.Priority.high,
-                  importance: notif.Importance.max);
-
-          notif.NotificationDetails notifDetails =
-              notif.NotificationDetails(android: androidNotif);
-
-          await notificationPlug.show(
-              notifID++, notifyContent[0][7], notifyContent[0][5], notifDetails,
-              payload: 'notify');
-
-          /* service.setNotificationInfo(
-              title: notifyContent[0][7], content: notifyContent[0][5]);
- */
-          /*  service.sendData({
-            'action': 'notify',
-            'title': notifyContent[0][7],
-            'body': notifyContent[0][5]
-          });
-          showNotification(
-              notifID++, notifyContent[0][7], notifyContent[0][5], 'notify'); */
-          //service.setForegroundMode(false);
-         }*/
-
-      } else if (result['status'] == 'hacker') {
-        print('hack attempt failed');
-      } else if (result['status'] == 'invalid') {
-        print('Invalid request');
-      }
-    } else {
-      print('error');
-      print('network error...');
-    }
-  });
-}
- */
-/* void notificationListener() {}
- */
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
 
@@ -743,59 +572,11 @@ class MyApp extends StatelessWidget {
             ),
             textTheme: TextTheme(),
           )),
-      //home: HomePage(),
-      /* home: AvailableCourierPage(
-          'this.rName',
-          'this.dState',
-          'this.dCity',
-          'this.rPhone',
-          'this.rGender',
-          'this.description',
-          'this.priceRange',
-          'this.pLat',
-          'this.pLon',
-          'this.dLat',
-          'this.dLon',
-          'this.price',
-          'this.pAddress',
-          'this.dAddress',
-          'this.category', [
-        ['Lucas', 3, 'lucas_pic.jpg', '2300', '20'],
-        ['Zion', 5, 'zion_pic.jpg', '3429', '25'],
-        ['Happy', 1, 'happy_pic.jpg', '1500', '2'],
-      ]), */
-      //home: RegisterPage()
-      //home: Testing(),
       home: (!kIsWeb)
           ? (prefs.containsKey('sessionToken') == false)
               ? LoginPage()
               : ReloadHomePage()
           : LoginPage(),
-      //home: CreateOrderPage(),
-      /* home: ExixtingOrderDetailPage(
-        "okon",
-        "john",
-        " this.rName",
-        "this.rPhone",
-        "this.rGender",
-        "this.price",
-        " this.weight",
-        "this.description",
-        "this.pAddress",
-        "this.dAddress",
-        "this.pdistance",
-        "delivered",
-        "this.oTime",
-        "this.pTime",
-        "this.dTime",
-        "this.cTime",
-        "this.pLat",
-        "this.pLon",
-        "this.dLat",
-        "this.dLon",
-        "this.cLat",
-        'this.cLon',
-      ), */
     );
   }
 }
