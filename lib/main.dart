@@ -43,8 +43,6 @@ import 'package:http/http.dart' as http;
 import 'package:file_picker/file_picker.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
-//var domain = "http://192.168.0.141:80/";
-//var domain = "http://localhost:80/";
 var domain = (kIsWeb)
     ? "http://ikp120.pythonanywhere.com/"
     : "http://ikp120.pythonanywhere.com/";
