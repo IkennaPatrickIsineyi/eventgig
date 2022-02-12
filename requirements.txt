@@ -1,0 +1,12 @@
+flask
+gunicorn
+mysqlx
+psycopg2
+pyfcm
+flask_sock
+simple_websocket
+gevent
+mysql
+requests
+eventlet
+firebase_admin
