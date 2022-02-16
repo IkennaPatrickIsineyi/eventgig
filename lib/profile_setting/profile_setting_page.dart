@@ -6,21 +6,13 @@ import 'package:experi/BLoC.dart';
 import 'package:experi/profile_setting/profile_setting_logic.dart';
 
 class ProfileSetting extends StatefulWidget {
-  ProfileSetting(this.currentSettings, this.plannerStatus);
-
-  final List currentSettings;
-  final String plannerStatus;
   @override
-  State<ProfileSetting> createState() =>
-      _ProfileSetting(currentSettings, plannerStatus);
+  State<ProfileSetting> createState() => _ProfileSetting();
 }
 
 //Allows the user to place an order for courier
 class _ProfileSetting extends State<ProfileSetting> {
-  _ProfileSetting(this.currentSettings, this.plannerStatus);
-
-  final List currentSettings;
-  final String plannerStatus;
+  final profileObj = ProfileLogic();
 
   @override
   Widget build(BuildContext context) {
@@ -32,21 +24,31 @@ class _ProfileSetting extends State<ProfileSetting> {
       "Yes",
     ];
 
-    profilePic = currentSettings[3];
-    email = (changed == true)
-        ? ((newEmail.isEmpty) ? currentSettings[1] : newEmail)
-        : currentSettings[1];
-    phone = (changed == true)
-        ? ((newPhone.isEmpty) ? currentSettings[0] : newPhone)
-        : currentSettings[0];
-    fee = (changed == true)
-        ? ((newFee.isEmpty) ? currentSettings[5].toString() : newFee)
-        : currentSettings[5].toString();
-    terms = (changed == true)
-        ? ((newTerms.isEmpty) ? currentSettings[4] : newTerms)
-        : currentSettings[4];
+    profileObj.profilePic = ProfileLogic.currentSettings[3];
+    profileObj.email = (profileObj.changed == true)
+        ? ((profileObj.newEmail.isEmpty)
+            ? ProfileLogic.currentSettings[1]
+            : profileObj.newEmail)
+        : ProfileLogic.currentSettings[1];
+    profileObj.phone = (profileObj.changed == true)
+        ? ((profileObj.newPhone.isEmpty)
+            ? ProfileLogic.currentSettings[0]
+            : profileObj.newPhone)
+        : ProfileLogic.currentSettings[0];
+    profileObj.fee = (profileObj.changed == true)
+        ? ((profileObj.newFee.isEmpty)
+            ? ProfileLogic.currentSettings[5].toString()
+            : profileObj.newFee)
+        : ProfileLogic.currentSettings[5].toString();
+    profileObj.terms = (profileObj.changed == true)
+        ? ((profileObj.newTerms.isEmpty)
+            ? ProfileLogic.currentSettings[4]
+            : profileObj.newTerms)
+        : ProfileLogic.currentSettings[4];
 
-    planner = (changed == true) ? newStatus : plannerStatus;
+    profileObj.planner = (profileObj.changed == true)
+        ? profileObj.newStatus
+        : ProfileLogic.plannerStatus;
 
     return Scaffold(
       appBar: AppBar(
@@ -90,12 +92,14 @@ class _ProfileSetting extends State<ProfileSetting> {
                                     /* Image.asset(
                                         "assets/images/passport.jpg", */
                                     Image.network(
-                                      (profilePic.isEmpty ||
-                                              profilePic == 'None')
+                                      (profileObj.profilePic.isEmpty ||
+                                              profileObj.profilePic == 'None')
                                           ?
                                           //user's profile picture
                                           Model.domain + 'img/' + 'default.png'
-                                          : Model.domain + 'img/' + profilePic,
+                                          : Model.domain +
+                                              'img/' +
+                                              profileObj.profilePic,
                                       height: (Model.deviceWidth >
                                               Model.mobileWidth)
                                           ? Model.deviceHeight * 0.8
@@ -111,11 +115,12 @@ class _ProfileSetting extends State<ProfileSetting> {
                         },
                         child: FadeInImage.assetNetwork(
                           placeholder: "assets/images/imgloading.gif",
-                          image: (profilePic.isEmpty || profilePic == 'None')
+                          image: (profileObj.profilePic.isEmpty ||
+                                  profileObj.profilePic == 'None')
                               ?
                               //user's profile picture
                               Model.domain + 'img/' + 'default.png'
-                              : Model.domain + 'img/' + profilePic,
+                              : Model.domain + 'img/' + profileObj.profilePic,
                           height: Model.deviceWidth * 0.5,
                           width: Model.deviceWidth * 0.5,
                         ),
@@ -129,7 +134,7 @@ class _ProfileSetting extends State<ProfileSetting> {
                             ),
                           ),
                           onPressed: () {
-                            changePicture();
+                            profileObj.changePicture();
                           },
                           label: Text("Change Picture"),
                           icon: Icon(Icons.photo_camera)),
@@ -157,7 +162,7 @@ class _ProfileSetting extends State<ProfileSetting> {
                       ),
                     ),
                     DropdownButton(
-                      value: planner,
+                      value: profileObj.planner,
                       items: eventTypeItems.map((String item) {
                         return DropdownMenuItem<String>(
                           child: Text(
@@ -171,8 +176,8 @@ class _ProfileSetting extends State<ProfileSetting> {
                       }).toList(),
                       onChanged: (var selected) {
                         setState(() {
-                          changed = true;
-                          newStatus = selected as String;
+                          profileObj.changed = true;
+                          profileObj.newStatus = selected as String;
                         });
                       },
                     ),
@@ -186,10 +191,10 @@ class _ProfileSetting extends State<ProfileSetting> {
                     : Model.deviceWidth * 0.8,
                 //padding: EdgeInsets.all(15),
                 child: TextFormField(
-                  initialValue: email,
+                  initialValue: profileObj.email,
                   onChanged: (input) {
-                    email = input;
-                    newEmail = input;
+                    profileObj.email = input;
+                    profileObj.newEmail = input;
                   },
                   keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
@@ -217,10 +222,10 @@ class _ProfileSetting extends State<ProfileSetting> {
                     : Model.deviceWidth * 0.8,
                 // padding: EdgeInsets.all(15),
                 child: TextFormField(
-                  initialValue: phone,
+                  initialValue: profileObj.phone,
                   onChanged: (input) {
-                    phone = input;
-                    newPhone = input;
+                    profileObj.phone = input;
+                    profileObj.newPhone = input;
                   },
                   keyboardType: TextInputType.phone,
                   decoration: InputDecoration(
@@ -241,18 +246,18 @@ class _ProfileSetting extends State<ProfileSetting> {
                   },
                 ),
               ),
-              if (planner == 'Yes') Divider(),
-              if (planner == 'Yes')
+              if (profileObj.planner == 'Yes') Divider(),
+              if (profileObj.planner == 'Yes')
                 SizedBox(
                   width: (Model.deviceWidth > Model.mobileWidth)
                       ? Model.deviceWidth * 0.5
                       : Model.deviceWidth * 0.8,
                   // padding: EdgeInsets.all(15),
                   child: TextFormField(
-                    initialValue: fee,
+                    initialValue: profileObj.fee,
                     onChanged: (input) {
-                      fee = input;
-                      newFee = input;
+                      profileObj.fee = input;
+                      profileObj.newFee = input;
                     },
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
@@ -266,10 +271,10 @@ class _ProfileSetting extends State<ProfileSetting> {
                     autovalidateMode: AutovalidateMode.always,
                     validator: (value) {
                       if (value!.isEmpty) {
-                        fee = "";
+                        profileObj.fee = "";
                         return "*required";
                       } else if (value.contains(RegExp(r"(\D)"))) {
-                        fee = "";
+                        profileObj.fee = "";
                         return "Fee must be number";
                       } else {
                         return null;
@@ -277,18 +282,18 @@ class _ProfileSetting extends State<ProfileSetting> {
                     },
                   ),
                 ),
-              if (planner == 'Yes') Divider(),
-              if (planner == 'Yes')
+              if (profileObj.planner == 'Yes') Divider(),
+              if (profileObj.planner == 'Yes')
                 SizedBox(
                   width: (Model.deviceWidth > Model.mobileWidth)
                       ? Model.deviceWidth * 0.5
                       : Model.deviceWidth * 0.8,
                   //  padding: EdgeInsets.all(15),
                   child: TextFormField(
-                    initialValue: terms,
+                    initialValue: profileObj.terms,
                     onChanged: (input) {
-                      terms = input;
-                      newTerms = input;
+                      profileObj.terms = input;
+                      profileObj.newTerms = input;
                     },
                     decoration: InputDecoration(
                       labelText: "Terms and conditions",
@@ -309,7 +314,7 @@ class _ProfileSetting extends State<ProfileSetting> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      if (planner == 'Yes')
+                      if (profileObj.planner == 'Yes')
                         Flexible(
                           child: ElevatedButton.icon(
                             style: ButtonStyle(
@@ -319,7 +324,7 @@ class _ProfileSetting extends State<ProfileSetting> {
                               borderRadius: BorderRadius.circular(20),
                             ))),
                             onPressed: () {
-                              showroom();
+                              profileObj.showroom();
                             },
                             label: Text("Edit Showroom"),
                             icon: Icon(
@@ -337,12 +342,14 @@ class _ProfileSetting extends State<ProfileSetting> {
                             ),
                           ),
                           onPressed: () {
-                            if (email.isNotEmpty && fee.isNotEmpty) {
-                              saveChanges();
-                            } else if (fee.isEmpty && planner == 'Yes') {
+                            if (profileObj.email.isNotEmpty &&
+                                profileObj.fee.isNotEmpty) {
+                              profileObj.saveChanges();
+                            } else if (profileObj.fee.isEmpty &&
+                                profileObj.planner == 'Yes') {
                               nullInputDialog(
                                   context, "Fee is required", 'Null Input');
-                            } else if (email.isEmpty) {
+                            } else if (profileObj.email.isEmpty) {
                               nullInputDialog(
                                   context, "Email is required", 'Null Input');
                             }

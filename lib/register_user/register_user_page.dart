@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_unnecessary_containers, use_key_in_widget_constructors, deprecated_member_use
 
+import 'package:experi/home/homeLogic.dart';
 import 'package:experi/home/homepage.dart';
 import 'package:experi/login/loginpage.dart';
 import 'package:experi/register_user/register_user_logic.dart';
@@ -8,11 +9,12 @@ import 'package:experi/model.dart';
 
 class RegisterPage extends StatefulWidget {
   @override
-  _RegisterPage createState() => _RegisterPage();
+  State<RegisterPage> createState() => _RegisterPage();
 }
 
 //Allows a prospective user to create an account
 class _RegisterPage extends State<RegisterPage> {
+  final registerObj = RegisterLogic();
   @override
   Widget build(BuildContext context) {
     Model.currentRoute = "register";
@@ -23,10 +25,12 @@ class _RegisterPage extends State<RegisterPage> {
       "Female",
     ];
 
-    if (loginSignal == true) {
+    if (registerObj.loginSignal == true) {
       return LoginPage();
-    } else if (homeSignal == true) {
-      return HomePage(true);
+    } else if (registerObj.homeSignal == true) {
+      HomeLogic.setter(true);
+
+      return HomePage();
     }
     return Scaffold(
       appBar: AppBar(
@@ -51,12 +55,8 @@ class _RegisterPage extends State<RegisterPage> {
               IconButton(
                 alignment: Alignment.center,
                 onPressed: () {
-                  Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => LoginPage(),
-                      ),
-                      (route) => false);
+                  Navigator.pushNamedAndRemoveUntil(
+                      Model.currentContext, '/loginpage', (route) => false);
                 },
                 icon: Icon(Icons.login),
               ),
@@ -90,10 +90,10 @@ class _RegisterPage extends State<RegisterPage> {
                       ),
                       padding: EdgeInsets.only(left: 30),
                       child: DropdownButton(
-                        value: gender,
+                        value: registerObj.gender,
                         onChanged: (var input) {
                           setState(() {
-                            gender = input as String;
+                            registerObj.gender = input as String;
                           });
                         },
 
@@ -147,7 +147,7 @@ class _RegisterPage extends State<RegisterPage> {
                     ),
                     Divider(),
                     ValueListenableBuilder(
-                      valueListenable: textValidator,
+                      valueListenable: registerObj.textValidator,
                       builder:
                           (BuildContext context, Set value1, Widget? child) {
                         return Container(
@@ -157,7 +157,7 @@ class _RegisterPage extends State<RegisterPage> {
                               onChanged: (input) {
                                 Model.username = input;
                                 value1.remove(1);
-                                currentField.add(1);
+                                registerObj.currentField.add(1);
                               },
                               keyboardType: TextInputType.visiblePassword,
                               decoration: InputDecoration(
@@ -189,7 +189,7 @@ class _RegisterPage extends State<RegisterPage> {
                     ),
                     Divider(),
                     ValueListenableBuilder(
-                      valueListenable: textValidator,
+                      valueListenable: registerObj.textValidator,
                       builder:
                           (BuildContext context, Set value1, Widget? child) {
                         return Container(
@@ -199,7 +199,7 @@ class _RegisterPage extends State<RegisterPage> {
                               onChanged: (input) {
                                 Model.email = input;
                                 value1.remove(2);
-                                currentField.add(2);
+                                registerObj.currentField.add(2);
                               },
                               keyboardType: TextInputType.emailAddress,
                               decoration: InputDecoration(
@@ -231,7 +231,7 @@ class _RegisterPage extends State<RegisterPage> {
                     ),
                     Divider(),
                     ValueListenableBuilder(
-                      valueListenable: textValidator,
+                      valueListenable: registerObj.textValidator,
                       builder:
                           (BuildContext context, Set value1, Widget? child) {
                         return Container(
@@ -239,9 +239,9 @@ class _RegisterPage extends State<RegisterPage> {
                             padding: EdgeInsets.only(left: 10, right: 10),
                             child: TextFormField(
                               onChanged: (input) {
-                                password = input;
+                                registerObj.password = input;
                                 value1.remove(3);
-                                currentField.add(3);
+                                registerObj.currentField.add(3);
                               },
                               decoration: InputDecoration(
                                 labelText: "Password",
@@ -260,7 +260,7 @@ class _RegisterPage extends State<RegisterPage> {
                               autovalidateMode: AutovalidateMode.always,
                               validator: (value) {
                                 if (value1.contains(3)) {
-                                  password = '';
+                                  registerObj.password = '';
                                   return "* required";
                                 } else {
                                   return null;
@@ -273,16 +273,16 @@ class _RegisterPage extends State<RegisterPage> {
                     ),
                     Divider(),
                     ValueListenableBuilder(
-                      valueListenable: textValidator,
+                      valueListenable: registerObj.textValidator,
                       builder:
                           (BuildContext context, Set value1, Widget? child) {
                         return Padding(
                           padding: EdgeInsets.only(left: 10, right: 10),
                           child: TextFormField(
                             onChanged: (input) {
-                              password2 = input;
+                              registerObj.password2 = input;
                               value1.remove(4);
-                              currentField.add(4);
+                              registerObj.currentField.add(4);
                             },
                             decoration: InputDecoration(
                               labelText: "Confirm Password",
@@ -301,10 +301,10 @@ class _RegisterPage extends State<RegisterPage> {
                             autovalidateMode: AutovalidateMode.always,
                             validator: (value) {
                               if (value1.contains(4)) {
-                                password2 = '';
+                                registerObj.password2 = '';
                                 return "* required";
-                              } else if (value != password &&
-                                  currentField.contains(4)) {
+                              } else if (value != registerObj.password &&
+                                  registerObj.currentField.contains(4)) {
                                 return "Passwords must match";
                               } else {
                                 return null;
@@ -319,7 +319,7 @@ class _RegisterPage extends State<RegisterPage> {
                     ElevatedButton(
                       //submit button segment
                       child: Text("Submit"),
-                      onPressed: validateInput,
+                      onPressed: registerObj.validateInput,
                       style: ButtonStyle(
                         fixedSize: MaterialStateProperty.all<Size>(
                           Size.fromWidth(

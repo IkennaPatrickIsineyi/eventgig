@@ -1,9 +1,9 @@
 // ignore_for_file: library_prefixes, avoid_print
 
+import 'package:experi/available_planners/available_planners_logic.dart';
 import 'package:flutter/material.dart';
 import 'package:experi/model.dart';
 import 'package:experi/BLoC.dart' as BLoC;
-import 'package:experi/available_planners/available_planners_page.dart';
 
 String eventDate = "";
 String street = "";
@@ -84,16 +84,13 @@ requestResult(result) {
     print(result['available']);
 
     /*  setState(() { */
-    Navigator.push(
-      Model.currentContext,
-      MaterialPageRoute(
-        builder: (BuildContext context) => AvailableCourierPage(
-          planners: result['available'],
-          showrooms: result['showroom'],
-          budget: result['budget'],
-        ),
-      ),
+    AvailablePlannersLogic.setter(
+      planners: result['available'],
+      showrooms: result['showroom'],
+      budget: result['budget'],
     );
+    Navigator.pushNamed(Model.currentContext, '/available_planners');
+
     //  });
   }
 }

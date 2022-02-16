@@ -4,21 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:experi/model.dart';
 import 'package:experi/home/homeLogic.dart';
 import 'package:experi/BLoC.dart' as BLoC;
-import 'package:experi/create_order/create_order_page.dart';
+//import 'package:experi/create_order/create_order_page.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage(this.newAccount, {this.accountDetails = const {}});
-  final Map accountDetails;
-  final bool newAccount;
   @override
-  _HomePageState createState() =>
-      _HomePageState(newAccount, accountDetails: accountDetails);
+  State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  _HomePageState(this.newAccount, {this.accountDetails = const {}});
-  final Map accountDetails;
-  final bool newAccount;
+  final homePageLogic = HomeLogic();
 
   @override
   Widget build(BuildContext context) {
@@ -28,21 +22,23 @@ class _HomePageState extends State<HomePage> {
     /* if (!kIsWeb) {
       showNotification(0, 'EventGig', 'Login was successful', 'loginSuccess');
     } */
-    if (newAccount == false) {
-      pendingList = accountDetails['pending'];
-      scheduledList = accountDetails['scheduled'];
-      completedList = accountDetails['completed'];
-      pendingPicList = accountDetails['pendingPics'];
-      scheduledPicList = accountDetails['scheduledPics'];
-      completedPicList = accountDetails['completedPics'];
+    if (HomeLogic.newAccount == false) {
+      homePageLogic.pendingList = HomeLogic.accountDetails['pending'];
+      homePageLogic.scheduledList = HomeLogic.accountDetails['scheduled'];
+      homePageLogic.completedList = HomeLogic.accountDetails['completed'];
+      homePageLogic.pendingPicList = HomeLogic.accountDetails['pendingPics'];
+      homePageLogic.scheduledPicList =
+          HomeLogic.accountDetails['scheduledPics'];
+      homePageLogic.completedPicList =
+          HomeLogic.accountDetails['completedPics'];
     } else {
       Model.emailVerified = false;
-      pendingList = [];
-      scheduledList = [];
-      completedList = [];
-      pendingPicList = [];
-      scheduledPicList = [];
-      completedPicList = [];
+      homePageLogic.pendingList = [];
+      homePageLogic.scheduledList = [];
+      homePageLogic.completedList = [];
+      homePageLogic.pendingPicList = [];
+      homePageLogic.scheduledPicList = [];
+      homePageLogic.completedPicList = [];
     }
 
     List menuItems = [
@@ -57,7 +53,7 @@ class _HomePageState extends State<HomePage> {
           ),
           onPressed: () {
             Navigator.pop(context);
-            reRoute('setting');
+            homePageLogic.reRoute('setting');
           },
           icon: Icon(Icons.settings),
         ),
@@ -74,7 +70,7 @@ class _HomePageState extends State<HomePage> {
           ),
           onPressed: () {
             Navigator.pop(context);
-            reRoute('chat');
+            homePageLogic.reRoute('chat');
           },
           icon: Icon(Icons.chat),
         ),
@@ -91,7 +87,7 @@ class _HomePageState extends State<HomePage> {
           ),
           onPressed: () {
             Navigator.pop(context);
-            reRoute('logout');
+            homePageLogic.reRoute('logout');
           },
           icon: Icon(Icons.logout_rounded),
         ),
@@ -100,10 +96,10 @@ class _HomePageState extends State<HomePage> {
     ];
 
     return ValueListenableBuilder(
-        valueListenable: reloadPage,
+        valueListenable: homePageLogic.reloadPage,
         builder: (BuildContext context, int value1, Widget? child) {
           return Material(
-              child: (verifyEmail == true)
+              child: (homePageLogic.verifyEmail == true)
                   ? Scaffold(
                       appBar: AppBar(
                         brightness: Brightness.dark,
@@ -127,7 +123,7 @@ class _HomePageState extends State<HomePage> {
                             padding: EdgeInsets.all(15),
                             child: TextFormField(
                               onChanged: (input) {
-                                otp = input;
+                                homePageLogic.otp = input;
                               },
                               keyboardType: TextInputType.number,
                               decoration: InputDecoration(
@@ -138,14 +134,14 @@ class _HomePageState extends State<HomePage> {
                               autovalidateMode: AutovalidateMode.always,
                               validator: (value) {
                                 if (value!.isEmpty) {
-                                  otp = '';
+                                  homePageLogic.otp = '';
                                   return "*required";
                                 } else if (value.contains(RegExp(r'(\D)'))) {
-                                  otp = '';
+                                  homePageLogic.otp = '';
                                   return "Verification code is a number";
                                 } else if (!value
                                     .contains(RegExp(r'(\d{6})'))) {
-                                  otp = '';
+                                  homePageLogic.otp = '';
                                   return "Verification code is 6-digit number";
                                 } else {
                                   return null;
@@ -155,7 +151,8 @@ class _HomePageState extends State<HomePage> {
                           ),
                           ElevatedButton(
                             onPressed: () {
-                              if (otp.isNotEmpty) verifyOTP();
+                              if (homePageLogic.otp.isNotEmpty)
+                                homePageLogic.verifyOTP();
                             },
                             child: Text("Submit Code"),
                           )
@@ -168,18 +165,12 @@ class _HomePageState extends State<HomePage> {
                         floatingActionButton: FloatingActionButton(
                           onPressed: () {
                             (Model.emailVerified == true)
-                                ? Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (BuildContext context) =>
-                                          CreateOrderPage(),
-                                    ),
-                                  )
+                                ? Navigator.pushNamed(context, '/create_order')
                                 : BLoC.nullInputDialog(
                                     context,
                                     "email verification required",
                                     "",
-                                    sendCode: sendOTP,
+                                    sendCode: homePageLogic.sendOTP,
                                     email: true,
                                   );
                           },
@@ -200,7 +191,8 @@ class _HomePageState extends State<HomePage> {
                                     Stack(
                                       children: [
                                         ElevatedButton(
-                                          onPressed: () => getNotifications(),
+                                          onPressed: () =>
+                                              homePageLogic.getNotifications(),
                                           child: Icon(Icons.notifications,
                                               size: 28),
                                           style: ButtonStyle(
@@ -280,7 +272,7 @@ class _HomePageState extends State<HomePage> {
                                       },
                                       onSelected: (way) {
                                         print('selected');
-                                        reRoute(way as String);
+                                        homePageLogic.reRoute(way as String);
                                       },
                                       icon: Icon(Icons.list),
                                       padding: EdgeInsets.zero,
@@ -323,34 +315,40 @@ class _HomePageState extends State<HomePage> {
                                 child: SingleChildScrollView(
                                   //reverse: true,
                                   physics: AlwaysScrollableScrollPhysics(),
-                                  child: buildTable(
-                                      "pending", pendingList, pendingPicList),
+                                  child: homePageLogic.buildTable(
+                                      "pending",
+                                      homePageLogic.pendingList,
+                                      homePageLogic.pendingPicList),
                                 ),
                                 onRefresh: () {
                                   BLoC.block(context);
-                                  return reload();
+                                  return homePageLogic.reload();
                                 }),
                             RefreshIndicator(
                                 semanticsLabel: 'scheduledTab',
                                 child: SingleChildScrollView(
                                   physics: AlwaysScrollableScrollPhysics(),
-                                  child: buildTable("scheduled", scheduledList,
-                                      scheduledPicList),
+                                  child: homePageLogic.buildTable(
+                                      "scheduled",
+                                      homePageLogic.scheduledList,
+                                      homePageLogic.scheduledPicList),
                                 ),
                                 onRefresh: () {
                                   BLoC.block(context);
-                                  return reload();
+                                  return homePageLogic.reload();
                                 }),
                             RefreshIndicator(
                                 semanticsLabel: 'completedTab',
                                 child: SingleChildScrollView(
                                   physics: AlwaysScrollableScrollPhysics(),
-                                  child: buildTable("completed", completedList,
-                                      completedPicList),
+                                  child: homePageLogic.buildTable(
+                                      "completed",
+                                      homePageLogic.completedList,
+                                      homePageLogic.completedPicList),
                                 ),
                                 onRefresh: () {
                                   BLoC.block(context);
-                                  return reload();
+                                  return homePageLogic.reload();
                                 }),
                           ],
                         ),

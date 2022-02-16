@@ -1,36 +1,40 @@
 // ignore_for_file: prefer_const_constructors, avoid_print, file_names, prefer_typing_uninitialized_variables, unused_local_variable, library_prefixes
 
+import 'package:experi/home/homeLogic.dart';
 import 'package:experi/model.dart';
 import 'package:experi/BLoC.dart' as BLoC;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:experi/home/homepage.dart';
-import 'package:experi/login/loginpage.dart';
 import 'package:intl/intl.dart' as intl;
 
 class LoginLogic {
-  static String password = "";
-  static bool nullSignal = false;
-  static bool registerSignal = false;
-  static bool loadHome = false;
-  static var homeParam;
-  static var result;
-
   static bool resetPassword = false;
-  static String otp = '';
-  static String password1 = '';
-  static String password2 = '';
-  static bool mismatch = false;
-  static bool invalidOTP = false;
-  static bool usernameOnly = false;
-  static bool validating = false;
-  static Set formInputText = {};
+  String password = "";
+  bool nullSignal = false;
+  bool registerSignal = false;
+  bool loadHome = false;
+  var homeParam;
+  var result;
+
+//  static bool resetPassword = false;
+  String otp = '';
+  String password1 = '';
+  String password2 = '';
+  bool mismatch = false;
+  bool invalidOTP = false;
+  bool usernameOnly = false;
+  bool validating = false;
+  Set formInputText = {};
 
   //TextEditingController control = TextEditingController();
   static late final ValueNotifier textValidator;
   static late final ValueNotifier<Set> pwdResetValidator;
 
-  static Set currentField = {};
+  Set currentField = {};
+
+  static setter(bool resetpassword) {
+    LoginLogic.resetPassword = resetpassword;
+  }
 
   loginSockEvent() {
     print('login Event called');
@@ -74,15 +78,11 @@ class LoginLogic {
       if (Model.testMode == false) Navigator.pop(Model.currentContext);
       //  setState(() {});
       if (Model.testMode == false) {
-        Navigator.pushAndRemoveUntil(
-            Model.currentContext,
-            MaterialPageRoute(
-              builder: (context) => HomePage(
-                false,
-                accountDetails: result,
-              ),
-            ),
-            (route) => false);
+        HomeLogic.setter(
+          false,
+          accountDetails: result,
+        );
+        Navigator.pushNamed(Model.currentContext, '/home_page');
       }
       if (Model.testMode == false) {
         Model.socketNotifier.removeListener(loginResultSockEvent);
@@ -102,14 +102,8 @@ class LoginLogic {
         //  setState(() {
         usernameOnly = false;
         //  });
-        Navigator.push(
-          Model.currentContext,
-          MaterialPageRoute(
-            builder: (BuildContext context) => LoginPage(
-              resetpassword: true,
-            ),
-          ),
-        );
+        LoginLogic.setter(true);
+        Navigator.pushNamed(Model.currentContext, '/loginpage');
       } else if (result['status'] == 'invalid') {
         print('Invalid username');
         BLoC.snackMsg(Model.currentContext, "Invalid username");
@@ -131,12 +125,8 @@ class LoginLogic {
       if (result['status'] == 'changed') {
         print('Password Changed');
 
-        Navigator.pushAndRemoveUntil(
-            Model.currentContext,
-            MaterialPageRoute(
-              builder: (context) => LoginPage(),
-            ),
-            (route) => false);
+        Navigator.pushNamedAndRemoveUntil(
+            Model.currentContext, '/loginpage', (route) => false);
         BLoC.snackMsg(Model.currentContext, "Password Reset Successful");
       } else if (result['status'] == 'hacker') {
         print('hack attempt failed');

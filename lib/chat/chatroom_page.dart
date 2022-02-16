@@ -9,33 +9,13 @@ import 'package:experi/chat/chatroom_logic.dart';
 import 'package:experi/BLoC.dart' as BLoC;
 
 class Chatroom extends StatefulWidget {
-  Chatroom(this.allChats, this.userProfile, this.single, this.currentRoute,
-      {this.multipleProfiles = const [], this.idOfLastChat = 0});
-
-  final List allChats;
-  final List userProfile;
-  final bool single;
-  final List multipleProfiles;
-  final int idOfLastChat;
-  final String currentRoute;
   @override
-  _Chatroom createState() =>
-      _Chatroom(allChats, userProfile, single, currentRoute,
-          multipleProfiles: multipleProfiles, idOfLastChat: idOfLastChat);
+  State<Chatroom> createState() => _Chatroom();
 }
 
 //Allows the user to place an order for courier
 class _Chatroom extends State<Chatroom> {
-  _Chatroom(this.allChats, this.userProfile, this.single, this.currentRoute,
-      {this.multipleProfiles = const [], this.idOfLastChat = 0});
-
-  final List allChats;
-  final List userProfile;
-  final bool single;
-  final List multipleProfiles;
-  final int idOfLastChat;
-  final String currentRoute;
-
+  final chatObj = ChatRoom();
   @override
   initState() {
     super.initState();
@@ -43,25 +23,25 @@ class _Chatroom extends State<Chatroom> {
 
     if (Model.listener1Added == false) {
       print('adding listener1');
-      Model.socketNotifier.addListener(() => listener1());
+      Model.socketNotifier.addListener(() => chatObj.listener1());
       Model.listener1Added = true;
     }
     if (Model.listener2Added == false) {
       print('adding listener2');
-      Model.pingNotifier.addListener(() => listener2());
+      Model.pingNotifier.addListener(() => chatObj.listener2());
       Model.listener2Added = true;
     }
 
     liste() {
       print('calling fucker...');
-      refreshed = true;
+      chatObj.refreshed = true;
       setState(() {});
       print('fucker called...');
       /*   posoNot.removeListener(liste); */
       print('fucker killed...');
     }
 
-    if (currentRoute == "ChatroomSingle") {
+    if (ChatRoom.currentRoute == "ChatroomSingle") {
       Model.posoNot.removeListener(liste);
       Model.posoNot.addListener(liste);
       Model.singleChats = true;
@@ -69,8 +49,8 @@ class _Chatroom extends State<Chatroom> {
       Model.singleChats = false;
     }
 
-    nextChatid = idOfLastChat;
-    if (single == true) {
+    chatObj.nextChatid = ChatRoom.idOfLastChat;
+    if (ChatRoom.single == true) {
     } else {}
   }
 
@@ -85,7 +65,7 @@ class _Chatroom extends State<Chatroom> {
   @override
   dispose() {
     print('disposed');
-    if (single == true) {
+    if (ChatRoom.single == true) {
       //  if (singleChatTimer.isActive) singleChatTimer.cancel();
       //    if (newMessageTimer.isActive) newMessageTimer.cancel();
     } else {
@@ -100,27 +80,27 @@ class _Chatroom extends State<Chatroom> {
 
   @override
   Widget build(BuildContext context) {
-    //currentRoute = (single == true) ? "ChatroomSingle" : "ChatroomMulti";
+    //currentRoute = (ChatRoom.single == true) ? "ChatroomSingle" : "ChatroomMulti";
     Model.modif = false;
     print("chatroom loaded");
 
-    if (refreshed == false) {
+    if (chatObj.refreshed == false) {
       print("refreshed false");
-      Model.prefs.setString("currentRoute", currentRoute);
-      Model.chats = allChats;
-      refreshed = true;
-      /* if(!Model.memberOnlineStatus.containsKey(userProfile[0]) && currentRoute=="ChatroomSingle")
-         Model.memberOnlineStatus[userProfile[0]] = [];
-        Model.memberOnlineStatus[userProfile[0]]!.add(chatData['profiles']);
-            Model.memberOnlineStatus[userProfile[0]]!.add(userProfile[0]['last_seen'][usr]);
+      Model.prefs.setString("currentRoute", ChatRoom.currentRoute);
+      Model.chats = ChatRoom.allChats;
+      chatObj.refreshed = true;
+      /* if(!Model.memberOnlineStatus.containsKey(ChatRoom.userProfile[0]) && currentRoute=="ChatroomSingle")
+         Model.memberOnlineStatus[ChatRoom.userProfile[0]] = [];
+        Model.memberOnlineStatus[ChatRoom.userProfile[0]]!.add(chatData['profiles']);
+            Model.memberOnlineStatus[ChatRoom.userProfile[0]]!.add(ChatRoom.userProfile[0]['last_seen'][usr]);
       } */
     }
 
-    if (single == true) {
+    if (ChatRoom.single == true) {
       print("chatroom single");
 
       print(Model.chats);
-      if (Model.chats.isNotEmpty) lastChatId = Model.chats.last[6];
+      if (Model.chats.isNotEmpty) chatObj.lastChatId = Model.chats.last[6];
       return Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
@@ -148,10 +128,12 @@ class _Chatroom extends State<Chatroom> {
                               child: Container(
                                 child: FadeInImage.assetNetwork(
                                   placeholder: "assets/images/imgloading.gif",
-                                  image: (userProfile[1].isEmpty ||
-                                          userProfile[1] == 'None')
+                                  image: (ChatRoom.userProfile[1].isEmpty ||
+                                          ChatRoom.userProfile[1] == 'None')
                                       ? Model.domain + 'img/' + 'default.png'
-                                      : Model.domain + 'img/' + userProfile[1],
+                                      : Model.domain +
+                                          'img/' +
+                                          ChatRoom.userProfile[1],
                                 ),
                               ),
                             ),
@@ -160,10 +142,10 @@ class _Chatroom extends State<Chatroom> {
                               builder: (BuildContext context, int value1,
                                   Widget? child) {
                                 print(value1);
-                                if (Model.memberOnlineStatus
-                                    .containsKey(userProfile[0])) if (Model
+                                if (Model.memberOnlineStatus.containsKey(
+                                    ChatRoom.userProfile[0])) if (Model
                                             .memberOnlineStatus[
-                                        userProfile[0]]![0] ==
+                                        ChatRoom.userProfile[0]]![0] ==
                                     1) {
                                   return Positioned(
                                     bottom: 0,
@@ -188,12 +170,12 @@ class _Chatroom extends State<Chatroom> {
                 )
               : null,
           title: GestureDetector(
-            onTap: () => getUserDetails(userProfile[0]),
+            onTap: () => chatObj.getUserDetails(ChatRoom.userProfile[0]),
             child:
                 /* Stack(
               children: [ */
                 Text(
-              userProfile[0],
+              ChatRoom.userProfile[0],
               //style: TextStyle(fontSize: 12),
             ),
           ),
@@ -205,11 +187,11 @@ class _Chatroom extends State<Chatroom> {
 
                 // print(instanceId);
                 print(value1);
-                if (selectedChats.isNotEmpty) {
+                if (chatObj.selectedChats.isNotEmpty) {
                   return IconButton(
                     onPressed: () {
                       print('delete');
-                      deleteChats(selectedChats.toList());
+                      chatObj.deleteChats(chatObj.selectedChats.toList());
                     },
                     padding: EdgeInsets.only(left: 8),
                     color: Colors.black,
@@ -236,28 +218,28 @@ class _Chatroom extends State<Chatroom> {
               print('Model.chats.length: ${Model.chats.length + 1}');
               //  int index = count - 1;
               print("index: $index");
-              print('adjustOffset: $adjustOffset');
+              print('adjustOffset: ${chatObj.adjustOffset}');
 
               if (index >= Model.chats.length - 11 &&
-                  adjustOffset == false &&
+                  chatObj.adjustOffset == false &&
                   Model.chats.length >= 20) {
                 print("refreshing");
-                adjustOffset = true;
-                fetchMore = true;
-                showIndicator.value = true;
-                updating = false;
-                getChats(userProfile[0]);
+                chatObj.adjustOffset = true;
+                chatObj.fetchMore = true;
+                chatObj.showIndicator.value = true;
+                chatObj.updating = false;
+                chatObj.getChats(ChatRoom.userProfile[0]);
                 //setState(() {});
-                //updating = false;
+                //chatObj.updating = false;
               }
               if (index == Model.chats.length) {
                 return ValueListenableBuilder(
-                  valueListenable: showIndicator,
+                  valueListenable: chatObj.showIndicator,
                   builder: (BuildContext context, bool value1, Widget? child) {
                     print("show indicator: $value1");
 
                     // if(Model.chats.first==chat)
-                    if (showIndicator.value == false) {
+                    if (chatObj.showIndicator.value == false) {
                       return Container(
                         constraints: BoxConstraints(minHeight: 0, maxHeight: 0),
                       );
@@ -284,8 +266,8 @@ class _Chatroom extends State<Chatroom> {
                   print('Model.chats.length: ${Model.chats.length + 1}');
                   return GestureDetector(
                     onLongPress: () {
-                      if (selectedChats.isEmpty &&
-                          !deleted.contains(Model.chats[index][6]) &&
+                      if (chatObj.selectedChats.isEmpty &&
+                          !chatObj.deleted.contains(Model.chats[index][6]) &&
                           Model.chats[index][2] == Model.username)
                       //a user can only select messages sent
                       //by him/her and which have not been deleted.
@@ -295,7 +277,8 @@ class _Chatroom extends State<Chatroom> {
                       // the user can select another message by tapping
                       //instead of longpressing it.
                       {
-                        selectedChats.add(Model.chats[index][6].hashCode);
+                        chatObj.selectedChats
+                            .add(Model.chats[index][6].hashCode);
                         Model.selected.value++;
                         //The hashcode of chatid of any selected message
                         //must be added to the notifier set. Doing so
@@ -305,17 +288,18 @@ class _Chatroom extends State<Chatroom> {
                       print(value1);
                     },
                     onTap: () {
-                      if (selectedChats
+                      if (chatObj.selectedChats
                           .contains(Model.chats[index][6].hashCode))
                       //if this message has already been selected, tapping
                       //the message should unselect it by removing from
                       //the notifier set
                       {
-                        selectedChats.remove(Model.chats[index][6].hashCode);
+                        chatObj.selectedChats
+                            .remove(Model.chats[index][6].hashCode);
                         int x = Model.selected.value + 1;
                         Model.selected.value = x;
-                      } else if (selectedChats.isNotEmpty &&
-                          !deleted.contains(Model.chats[index][6]) &&
+                      } else if (chatObj.selectedChats.isNotEmpty &&
+                          !chatObj.deleted.contains(Model.chats[index][6]) &&
                           Model.chats[index][2] == Model.username)
                       //if any other message has already been selected
                       //tapping this message would select it by
@@ -326,7 +310,8 @@ class _Chatroom extends State<Chatroom> {
                         // notifierSet = true;
                         //initialisation end
 
-                        selectedChats.add(Model.chats[index][6].hashCode);
+                        chatObj.selectedChats
+                            .add(Model.chats[index][6].hashCode);
                         Model.selected.value++;
                         //selects this message
                       }
@@ -380,7 +365,7 @@ class _Chatroom extends State<Chatroom> {
                       ),
                       child: Row(
                         children: [
-                          if (!deleted.contains(Model.chats[index][6]))
+                          if (!chatObj.deleted.contains(Model.chats[index][6]))
                             //Do not show messages that the user
                             //has just deleted
                             ClipPath(
@@ -452,11 +437,11 @@ class _Chatroom extends State<Chatroom> {
                                     //if message is selected, color is
                                     //grey or red[100]
                                     //else color is black or red
-                                    ? (selectedChats.contains(
+                                    ? (chatObj.selectedChats.contains(
                                             Model.chats[index][6].hashCode))
                                         ? Colors.grey //selected
                                         : Colors.black //not selected
-                                    : (selectedChats.contains(
+                                    : (chatObj.selectedChats.contains(
                                             Model.chats[index][6].hashCode))
                                         ? Colors.red[100] //selected
                                         : Colors.red, //not selected
@@ -530,7 +515,8 @@ class _Chatroom extends State<Chatroom> {
                                         // current message. That condition
                                         //can never be true. LOL
                                         ValueListenableBuilder(
-                                          valueListenable: deliveryListener,
+                                          valueListenable:
+                                              chatObj.deliveryListener,
                                           builder: (BuildContext context,
                                               int value2, Widget? child) {
                                             if (Model
@@ -541,7 +527,7 @@ class _Chatroom extends State<Chatroom> {
                                                 //created space between the
                                                 // message and the timestamp
                                                 child: Text(
-                                                  utcToLocal(
+                                                  chatObj.utcToLocal(
                                                       Model.chats[index][0]),
                                                   // chat[0],
                                                   style: TextStyle(
@@ -601,9 +587,9 @@ class _Chatroom extends State<Chatroom> {
               SizedBox(
                 width: MediaQuery.of(context).size.width * 0.9,
                 child: TextFormField(
-                  controller: textController,
+                  controller: chatObj.textController,
                   onChanged: (input) {
-                    newMsg = input;
+                    chatObj.newMsg = input;
                   },
                   keyboardType: TextInputType.multiline,
                   decoration: InputDecoration(
@@ -621,7 +607,7 @@ class _Chatroom extends State<Chatroom> {
               ),
               IconButton(
                 onPressed: () {
-                  if (newMsg.isNotEmpty) {
+                  if (chatObj.newMsg.isNotEmpty) {
                     print('calling sendMesg');
                     //int indx = Model.chats.length;
 
@@ -631,8 +617,8 @@ class _Chatroom extends State<Chatroom> {
                             "",
                             DateTime.now().day.toString(),
                             Model.username,
-                            userProfile[0],
-                            newMsg,
+                            ChatRoom.userProfile[0],
+                            chatObj.newMsg,
                             0,
                             Random().nextInt(1000000000),
                           ])
@@ -641,25 +627,25 @@ class _Chatroom extends State<Chatroom> {
                       "",
                       DateTime.now().day.toString(),
                       Model.username,
-                      userProfile[0],
-                      newMsg,
+                      ChatRoom.userProfile[0],
+                      chatObj.newMsg,
                       0,
                       Random().nextInt(1000000000),
                     ]);
                     // setState(() {
 
-                    // newMsg = '';
-                    refreshed = true;
+                    // chatObj.newMsg = '';
+                    chatObj.refreshed = true;
                     //int x = Model.selected.value;
                     // Model.selected.value = x + 1;
                     // });
-                    textController.clear();
+                    chatObj.textController.clear();
                     setState(() {});
-                    sendMesg(
+                    chatObj.sendMesg(
                         /*  (Model.chats.length == 0) ? */ Model
                             .chats.length /* : Model.chats.length - 1 */,
-                        newMsg,
-                        userProfile[0]);
+                        chatObj.newMsg,
+                        ChatRoom.userProfile[0]);
                   }
                 },
                 alignment: Alignment.topCenter,
@@ -702,7 +688,7 @@ class _Chatroom extends State<Chatroom> {
               child: ValueListenableBuilder(
                 valueListenable: Model.allChatOnlineStatus,
                 builder: (BuildContext context, int value1, Widget? child) {
-                  return buildTable(
+                  return chatObj.buildTable(
                     Model.chatData['profiles']!,
                   );
                 },

@@ -6,112 +6,20 @@ import 'package:experi/model.dart';
 import 'package:experi/BLoC.dart' as BLoC;
 
 class ExixtingOrderDetailPage extends StatefulWidget {
-  ExixtingOrderDetailPage(
-    this.client,
-    this.planner,
-    this.rGender,
-    this.timeCreated,
-    this.eventDate,
-    this.street,
-    this.eventType,
-    this.budget,
-    this.status,
-    this.fee,
-    this.note,
-    this.trnxid,
-    this.rating,
-    this.comment,
-    this.city,
-    this.state,
-    this.country,
-  );
-
-  final String client;
-  final String planner;
-  final String rGender;
-  final String timeCreated;
-  final String eventDate;
-  final String street;
-  final String eventType;
-  final String budget;
-  final String status;
-  final String fee;
-  final String note;
-  final String trnxid;
-  final int rating;
-  final String comment;
-  final String city;
-  final String state;
-  final String country;
-
   @override
-  _ExixtingOrderDetailPage createState() => _ExixtingOrderDetailPage(
-      client,
-      planner,
-      rGender,
-      timeCreated,
-      eventDate,
-      street,
-      eventType,
-      budget,
-      status,
-      fee,
-      note,
-      trnxid,
-      rating,
-      comment,
-      city,
-      state,
-      country);
+  State<ExixtingOrderDetailPage> createState() => _ExixtingOrderDetailPage();
 }
 
 //Displays the details of an exixting order
 class _ExixtingOrderDetailPage extends State<ExixtingOrderDetailPage> {
-  _ExixtingOrderDetailPage(
-    this.client,
-    this.planner,
-    this.rGender,
-    this.timeCreated,
-    this.eventDate,
-    this.street,
-    this.eventType,
-    this.budget,
-    this.status,
-    this.fee,
-    this.note,
-    this.trnxid,
-    this.rating,
-    this.comment,
-    this.city,
-    this.state,
-    this.country,
-  );
-
-  final String client;
-  final String planner;
-  final String rGender;
-  final String timeCreated;
-  final String eventDate;
-  final String street;
-  final String eventType;
-  final String budget;
-  final String status;
-  final String fee;
-  final String note;
-  final String trnxid;
-  final int rating;
-  final String comment;
-  final String city;
-  final String state;
-  final String country;
-
+  final existingOrderLogic = ExistingOrder();
   @override
   Widget build(BuildContext context) {
     print('existing order called...');
     Model.currentRoute = "ExixtingOrderDetailPage";
 
     Model.prefs.setString("currentRoute", "ExixtingOrderDetailPage");
-    if (ratePlanner == false) {
+    if (existingOrderLogic.ratePlanner == false) {
       return Scaffold(
         appBar: AppBar(
           brightness: Brightness.dark,
@@ -124,7 +32,7 @@ class _ExixtingOrderDetailPage extends State<ExixtingOrderDetailPage> {
                 ),
               ),
               Text(
-                status + " Events",
+                ExistingOrder.status + " Events",
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w300,
@@ -159,7 +67,7 @@ class _ExixtingOrderDetailPage extends State<ExixtingOrderDetailPage> {
                         ),
                       ),
                       Text(
-                        timeCreated,
+                        ExistingOrder.timeCreated,
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.grey[300],
@@ -179,7 +87,9 @@ class _ExixtingOrderDetailPage extends State<ExixtingOrderDetailPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        (Model.username == planner) ? "Client" : "Planner",
+                        (Model.username == ExistingOrder.planner)
+                            ? "Client"
+                            : "Planner",
                         style: TextStyle(
                           fontWeight: FontWeight.w500,
                           color: Colors.white,
@@ -187,7 +97,9 @@ class _ExixtingOrderDetailPage extends State<ExixtingOrderDetailPage> {
                         ),
                       ),
                       Text(
-                        (Model.username == planner) ? client : planner,
+                        (Model.username == ExistingOrder.planner)
+                            ? ExistingOrder.client
+                            : ExistingOrder.planner,
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.grey[300],
@@ -215,7 +127,7 @@ class _ExixtingOrderDetailPage extends State<ExixtingOrderDetailPage> {
                         ),
                       ),
                       Text(
-                        eventDate,
+                        ExistingOrder.eventDate,
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.grey[300],
@@ -243,7 +155,7 @@ class _ExixtingOrderDetailPage extends State<ExixtingOrderDetailPage> {
                         ),
                       ),
                       Text(
-                        street,
+                        ExistingOrder.street,
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.grey[300],
@@ -271,7 +183,7 @@ class _ExixtingOrderDetailPage extends State<ExixtingOrderDetailPage> {
                         ),
                       ),
                       Text(
-                        city,
+                        ExistingOrder.city,
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.grey[300],
@@ -299,7 +211,7 @@ class _ExixtingOrderDetailPage extends State<ExixtingOrderDetailPage> {
                         ),
                       ),
                       Text(
-                        state,
+                        ExistingOrder.state,
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.grey[300],
@@ -327,7 +239,7 @@ class _ExixtingOrderDetailPage extends State<ExixtingOrderDetailPage> {
                         ),
                       ),
                       Text(
-                        country,
+                        ExistingOrder.country,
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.grey[300],
@@ -355,7 +267,7 @@ class _ExixtingOrderDetailPage extends State<ExixtingOrderDetailPage> {
                         ),
                       ),
                       Text(
-                        eventType,
+                        ExistingOrder.eventType,
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.grey[300],
@@ -383,7 +295,7 @@ class _ExixtingOrderDetailPage extends State<ExixtingOrderDetailPage> {
                         ),
                       ),
                       Text(
-                        budget,
+                        ExistingOrder.budget,
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.grey[300],
@@ -411,7 +323,7 @@ class _ExixtingOrderDetailPage extends State<ExixtingOrderDetailPage> {
                         ),
                       ),
                       Text(
-                        fee.toString(),
+                        ExistingOrder.fee.toString(),
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.grey[300],
@@ -439,7 +351,7 @@ class _ExixtingOrderDetailPage extends State<ExixtingOrderDetailPage> {
                         ),
                       ),
                       Text(
-                        note,
+                        ExistingOrder.note,
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.grey[300],
@@ -449,7 +361,7 @@ class _ExixtingOrderDetailPage extends State<ExixtingOrderDetailPage> {
                     ],
                   ),
                 ),
-                if (status == "completed")
+                if (ExistingOrder.status == "completed")
                   Container(
                     width: Model.deviceWidth * 0.95,
                     color: Colors.black,
@@ -467,11 +379,11 @@ class _ExixtingOrderDetailPage extends State<ExixtingOrderDetailPage> {
                             fontSize: 16,
                           ),
                         ),
-                        starBuilder(rating),
+                        existingOrderLogic.starBuilder(ExistingOrder.rating),
                       ],
                     ),
                   ),
-                if (status == "completed")
+                if (ExistingOrder.status == "completed")
                   Container(
                     width: Model.deviceWidth * 0.95,
                     color: Colors.black,
@@ -490,7 +402,7 @@ class _ExixtingOrderDetailPage extends State<ExixtingOrderDetailPage> {
                           ),
                         ),
                         Text(
-                          comment,
+                          ExistingOrder.comment,
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.grey[300],
@@ -505,57 +417,67 @@ class _ExixtingOrderDetailPage extends State<ExixtingOrderDetailPage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      if (status == "pending" && Model.username == planner)
+                      if (ExistingOrder.status == "pending" &&
+                          Model.username == ExistingOrder.planner)
                         ElevatedButton(
                           onPressed: () {
                             print('accept order');
-                            acceptOrder(trnxid);
+                            existingOrderLogic
+                                .acceptOrder(ExistingOrder.trnxid);
                           },
                           child: Text("Accept"),
                         ),
-                      if (status == "pending" && Model.username == planner)
+                      if (ExistingOrder.status == "pending" &&
+                          Model.username == ExistingOrder.planner)
                         ElevatedButton(
                           onPressed: () {
                             print('reject order');
-                            rejectOrder(trnxid);
+                            existingOrderLogic
+                                .rejectOrder(ExistingOrder.trnxid);
                             //(courier == Model.username) ? confirmOrder : getOtp,
                           },
                           child: Text("Reject"),
                         ),
-                      if (status == "scheduled" && Model.username == client)
+                      if (ExistingOrder.status == "scheduled" &&
+                          Model.username == ExistingOrder.client)
                         ElevatedButton(
                           onPressed: () {
                             print('Finish event');
                             setState(() {
-                              ratePlanner = true;
+                              existingOrderLogic.ratePlanner = true;
                             });
                             //(courier == Model.username) ? confirmOrder : getOtp,
                           },
                           child: Text("Finish"),
                         ),
-                      if (status == "scheduled" && Model.username == client)
+                      if (ExistingOrder.status == "scheduled" &&
+                          Model.username == ExistingOrder.client)
                         ElevatedButton(
                           onPressed: () {
                             print('Cancel event');
-                            cancelEvent(trnxid);
+                            existingOrderLogic
+                                .cancelEvent(ExistingOrder.trnxid);
                             //(courier == Model.username) ? confirmOrder : getOtp,
                           },
                           child: Text("Cancel"),
                         ),
-                      if (status == "pending" && Model.username == planner)
+                      if (ExistingOrder.status == "pending" &&
+                          Model.username == ExistingOrder.planner)
                         ElevatedButton(
                           onPressed: () {
                             print('Chat');
-                            fetchChats(planner, client);
+                            existingOrderLogic.fetchChats(
+                                ExistingOrder.planner, ExistingOrder.client);
                             //(courier == Model.username) ? confirmOrder : getOtp,
                           },
                           child: Text("Chat"),
                         )
-                      else if (status == "scheduled")
+                      else if (ExistingOrder.status == "scheduled")
                         ElevatedButton(
                           onPressed: () {
                             print('Chat');
-                            fetchChats(planner, client);
+                            existingOrderLogic.fetchChats(
+                                ExistingOrder.planner, ExistingOrder.client);
                             //(courier == Model.username) ? confirmOrder : getOtp,
                           },
                           child: Text("Chat"),
@@ -599,7 +521,7 @@ class _ExixtingOrderDetailPage extends State<ExixtingOrderDetailPage> {
                     color: Colors.grey[300],
                   ),
                 ),
-                (pos == 0)
+                (existingOrderLogic.pos == 0)
                     ? Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -607,7 +529,7 @@ class _ExixtingOrderDetailPage extends State<ExixtingOrderDetailPage> {
                             IconButton(
                               onPressed: () {
                                 setState(() {
-                                  pos = i;
+                                  existingOrderLogic.pos = i;
                                   print(i);
                                 });
                               },
@@ -618,22 +540,22 @@ class _ExixtingOrderDetailPage extends State<ExixtingOrderDetailPage> {
                     : Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          for (int i = 1; i <= pos; i++)
+                          for (int i = 1; i <= existingOrderLogic.pos; i++)
                             IconButton(
                               onPressed: () {
                                 setState(() {
-                                  pos = i;
+                                  existingOrderLogic.pos = i;
                                   print(i);
                                 });
                               },
                               icon: Icon(Icons.star_purple500_outlined),
                               color: Colors.orange,
                             ),
-                          for (int j = pos; j < 5; j++)
+                          for (int j = existingOrderLogic.pos; j < 5; j++)
                             IconButton(
                               onPressed: () {
                                 setState(() {
-                                  pos = j + 1;
+                                  existingOrderLogic.pos = j + 1;
                                   print(j);
                                 });
                               },
@@ -644,7 +566,7 @@ class _ExixtingOrderDetailPage extends State<ExixtingOrderDetailPage> {
                 Padding(
                   padding: EdgeInsets.all(15),
                   child: ValueListenableBuilder(
-                    valueListenable: textValidator,
+                    valueListenable: existingOrderLogic.textValidator,
                     builder: (BuildContext context, int value1, Widget? child) {
                       return TextFormField(
                         decoration: InputDecoration(
@@ -667,7 +589,7 @@ class _ExixtingOrderDetailPage extends State<ExixtingOrderDetailPage> {
                           }
                         },
                         onChanged: (input) {
-                          review = input;
+                          existingOrderLogic.review = input;
                           value1 = 0;
                         },
                       );
@@ -676,13 +598,16 @@ class _ExixtingOrderDetailPage extends State<ExixtingOrderDetailPage> {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    if (review.isEmpty) textValidator.value = 1;
-                    if (pos <= 0) {
+                    if (existingOrderLogic.review.isEmpty)
+                      existingOrderLogic.textValidator.value = 1;
+                    if (existingOrderLogic.pos <= 0) {
                       BLoC.nullInputDialog(context,
                           "Rate the user on a scale of 5", "Rating missing");
                     }
-                    if (pos > 0 && review.isNotEmpty) {
-                      submitRating(review, pos, trnxid);
+                    if (existingOrderLogic.pos > 0 &&
+                        existingOrderLogic.review.isNotEmpty) {
+                      existingOrderLogic.submitRating(existingOrderLogic.review,
+                          existingOrderLogic.pos, ExistingOrder.trnxid);
                     }
                   },
                   child: Text("Submit"),

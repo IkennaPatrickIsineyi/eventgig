@@ -3,31 +3,27 @@
 import 'package:flutter/material.dart';
 import 'package:experi/model.dart';
 import 'package:experi/BLoC.dart' as BLoC;
-import 'package:experi/login/loginLogic.dart' as LogLogic;
+import 'package:experi/login/loginLogic.dart';
 
 class LoginPage extends StatefulWidget {
-  LoginPage({Key? key, this.resetpassword = false}) : super(key: key);
-  final bool resetpassword;
   @override
-  State<LoginPage> createState() => _LoginPage(resetpassword);
+  State<LoginPage> createState() => _LoginPage();
 }
 
 class _LoginPage extends State<LoginPage> {
-  _LoginPage(this.resetpwd);
-  final bool resetpwd;
-  var loginObj = LogLogic.LoginLogic();
+  final loginObj = LoginLogic();
   @override
   void initState() {
     super.initState();
-    LogLogic.LoginLogic.textValidator = ValueNotifier(0);
-    LogLogic.LoginLogic.pwdResetValidator = ValueNotifier<Set>({});
+    LoginLogic.textValidator = ValueNotifier(0);
+    LoginLogic.pwdResetValidator = ValueNotifier<Set>({});
     Model.currentContext = context;
   }
 
   @override
   void dispose() {
-    LogLogic.LoginLogic.textValidator.dispose();
-    LogLogic.LoginLogic.pwdResetValidator.dispose();
+    LoginLogic.textValidator.dispose();
+    LoginLogic.pwdResetValidator.dispose();
     super.dispose();
   }
 
@@ -38,9 +34,9 @@ class _LoginPage extends State<LoginPage> {
     Model.deviceHeight = MediaQuery.of(context).size.height;
 
     Model.prefs.setString("currentRoute", "login");
-    LogLogic.LoginLogic.resetPassword = resetpwd;
+    // LoginLogic.resetPassword = resetpwd;
 
-    if (LogLogic.LoginLogic.resetPassword == true) {
+    if (LoginLogic.resetPassword == true) {
       return Scaffold(
         appBar: AppBar(
           title: Column(
@@ -77,17 +73,16 @@ class _LoginPage extends State<LoginPage> {
                   ),
                   Divider(),
                   ValueListenableBuilder(
-                    valueListenable: LogLogic.LoginLogic.pwdResetValidator,
+                    valueListenable: LoginLogic.pwdResetValidator,
                     builder: (BuildContext context, Set value1, Widget? child) {
                       return Padding(
                         padding: EdgeInsets.only(left: 10, right: 10),
                         child: TextFormField(
                           maxLength: 6,
                           onChanged: (input) {
-                            LogLogic.LoginLogic.otp = input;
-                            LogLogic.LoginLogic.pwdResetValidator.value
-                                .remove(4);
-                            LogLogic.LoginLogic.currentField.add(4);
+                            loginObj.otp = input;
+                            LoginLogic.pwdResetValidator.value.remove(4);
+                            loginObj.currentField.add(4);
                           },
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
@@ -106,14 +101,14 @@ class _LoginPage extends State<LoginPage> {
                           autovalidateMode: AutovalidateMode.always,
                           validator: (value) {
                             if (value1.contains(4)) {
-                              LogLogic.LoginLogic.otp = '';
+                              loginObj.otp = '';
                               return "*required";
                             } else if (value!.contains(RegExp(r'(\D)')) &&
-                                LogLogic.LoginLogic.currentField.contains(4)) {
+                                loginObj.currentField.contains(4)) {
                               //otp = '';
                               return "Verification code is a number";
                             } else if (!value.contains(RegExp(r'(\d{6})')) &&
-                                LogLogic.LoginLogic.currentField.contains(4)) {
+                                loginObj.currentField.contains(4)) {
                               //otp = '';
                               return "Verification code is 6-digit number";
                             } else {
@@ -126,16 +121,15 @@ class _LoginPage extends State<LoginPage> {
                   ),
                   Divider(),
                   ValueListenableBuilder(
-                    valueListenable: LogLogic.LoginLogic.pwdResetValidator,
+                    valueListenable: LoginLogic.pwdResetValidator,
                     builder: (BuildContext context, Set value1, Widget? child) {
                       return Padding(
                         padding: EdgeInsets.only(left: 10, right: 10),
                         child: TextFormField(
                           onChanged: (input) {
-                            LogLogic.LoginLogic.password1 = input;
-                            LogLogic.LoginLogic.pwdResetValidator.value
-                                .remove(5);
-                            LogLogic.LoginLogic.currentField.add(5);
+                            loginObj.password1 = input;
+                            LoginLogic.pwdResetValidator.value.remove(5);
+                            loginObj.currentField.add(5);
                           },
                           decoration: InputDecoration(
                             labelText: "New Password",
@@ -154,11 +148,11 @@ class _LoginPage extends State<LoginPage> {
                           autovalidateMode: AutovalidateMode.always,
                           validator: (value) {
                             if (value1.contains(5)) {
-                              LogLogic.LoginLogic.password1 = '';
+                              loginObj.password1 = '';
                               return "Password is required";
                             } else if (!value!
                                     .contains(RegExp(r'([\w\W]{8,})')) &&
-                                LogLogic.LoginLogic.currentField.contains(5)) {
+                                loginObj.currentField.contains(5)) {
                               //password1 = '';
                               return "Must be at least 8 character long";
                             } else {
@@ -171,17 +165,16 @@ class _LoginPage extends State<LoginPage> {
                   ),
                   Divider(),
                   ValueListenableBuilder(
-                    valueListenable: LogLogic.LoginLogic.pwdResetValidator,
+                    valueListenable: LoginLogic.pwdResetValidator,
                     builder: (BuildContext context, Set value1, Widget? child) {
                       print(value1);
                       return Padding(
                         padding: EdgeInsets.only(left: 10, right: 10),
                         child: TextFormField(
                           onChanged: (input) {
-                            LogLogic.LoginLogic.password2 = input;
-                            LogLogic.LoginLogic.pwdResetValidator.value
-                                .remove(6);
-                            LogLogic.LoginLogic.currentField.add(6);
+                            loginObj.password2 = input;
+                            LoginLogic.pwdResetValidator.value.remove(6);
+                            loginObj.currentField.add(6);
                           },
                           decoration: InputDecoration(
                             labelText: "Confirm Password",
@@ -200,15 +193,15 @@ class _LoginPage extends State<LoginPage> {
                           autovalidateMode: AutovalidateMode.always,
                           validator: (value) {
                             if (value1.contains(6)) {
-                              LogLogic.LoginLogic.password2 = '';
+                              loginObj.password2 = '';
                               return "Password is required";
                             } else if (!value!
                                     .contains(RegExp(r'([\w\W]{8,})')) &&
-                                LogLogic.LoginLogic.currentField.contains(6)) {
+                                loginObj.currentField.contains(6)) {
                               //password2 = '';
                               return "Must be at least 8 character long";
-                            } else if (value != LogLogic.LoginLogic.password1 &&
-                                LogLogic.LoginLogic.currentField.contains(6)) {
+                            } else if (value != loginObj.password1 &&
+                                loginObj.currentField.contains(6)) {
                               //password2 = '';
                               return "Passwords must match";
                             } else {
@@ -223,22 +216,21 @@ class _LoginPage extends State<LoginPage> {
                   Divider(),
                   ElevatedButton(
                     onPressed: () {
-                      LogLogic.LoginLogic.pwdResetValidator.value = {};
-                      if (LogLogic.LoginLogic.otp.isEmpty) {
-                        LogLogic.LoginLogic.pwdResetValidator.value.add(4);
+                      LoginLogic.pwdResetValidator.value = {};
+                      if (loginObj.otp.isEmpty) {
+                        LoginLogic.pwdResetValidator.value.add(4);
                       }
 
-                      if (LogLogic.LoginLogic.password1.isEmpty) {
-                        LogLogic.LoginLogic.pwdResetValidator.value.add(5);
+                      if (loginObj.password1.isEmpty) {
+                        LoginLogic.pwdResetValidator.value.add(5);
                       }
-                      if (LogLogic.LoginLogic.password2.isEmpty) {
-                        LogLogic.LoginLogic.pwdResetValidator.value.add(6);
+                      if (loginObj.password2.isEmpty) {
+                        LoginLogic.pwdResetValidator.value.add(6);
                       }
-                      if (LogLogic.LoginLogic.otp.isNotEmpty &&
-                          LogLogic.LoginLogic.password1.isNotEmpty &&
-                          LogLogic.LoginLogic.password2.isNotEmpty &&
-                          LogLogic.LoginLogic.password1 ==
-                              LogLogic.LoginLogic.password2) {
+                      if (loginObj.otp.isNotEmpty &&
+                          loginObj.password1.isNotEmpty &&
+                          loginObj.password2.isNotEmpty &&
+                          loginObj.password1 == loginObj.password2) {
                         loginObj.verifyOTP();
                       }
                     },
@@ -325,14 +317,14 @@ class _LoginPage extends State<LoginPage> {
               children: [
                 Divider(),
                 ValueListenableBuilder(
-                    valueListenable: LogLogic.LoginLogic.textValidator,
+                    valueListenable: LoginLogic.textValidator,
                     builder: (BuildContext context, value1, Widget? child) {
                       return Padding(
                         padding: EdgeInsets.only(left: 10, right: 10),
                         child: TextFormField(
                           onChanged: (input) {
                             Model.username = input;
-                            LogLogic.LoginLogic.textValidator.value = 0;
+                            LoginLogic.textValidator.value = 0;
                           },
                           keyboardType: TextInputType.visiblePassword,
                           decoration: InputDecoration(
@@ -360,17 +352,17 @@ class _LoginPage extends State<LoginPage> {
                         ),
                       );
                     }),
-                if (LogLogic.LoginLogic.usernameOnly == false) Divider(),
-                if (LogLogic.LoginLogic.usernameOnly == false)
+                if (loginObj.usernameOnly == false) Divider(),
+                if (loginObj.usernameOnly == false)
                   ValueListenableBuilder(
-                      valueListenable: LogLogic.LoginLogic.textValidator,
+                      valueListenable: LoginLogic.textValidator,
                       builder: (BuildContext context, value1, Widget? child) {
                         return Padding(
                           padding: EdgeInsets.only(left: 10, right: 10),
                           child: TextFormField(
                             onChanged: (input) {
-                              LogLogic.LoginLogic.password = input;
-                              LogLogic.LoginLogic.textValidator.value = 0;
+                              loginObj.password = input;
+                              LoginLogic.textValidator.value = 0;
                             },
                             keyboardType: TextInputType.visiblePassword,
                             decoration: InputDecoration(
@@ -389,7 +381,7 @@ class _LoginPage extends State<LoginPage> {
                             autovalidateMode: AutovalidateMode.always,
                             validator: (value2) {
                               if (value1 == 2 || value1 == 3) {
-                                LogLogic.LoginLogic.password = "";
+                                loginObj.password = "";
                                 return "*required";
                               } else {
                                 return null;
@@ -407,7 +399,7 @@ class _LoginPage extends State<LoginPage> {
                     ElevatedButton(
                       onPressed: () async {
                         if (Model.diableLogin == false) {
-                          if (LogLogic.LoginLogic.usernameOnly == false) {
+                          if (loginObj.usernameOnly == false) {
                             Model.diableLogin = true;
                             bool nullInput = loginObj.validateInput();
                             if (nullInput == false) {
@@ -418,7 +410,7 @@ class _LoginPage extends State<LoginPage> {
                             }
                           } else {
                             setState(() {
-                              LogLogic.LoginLogic.usernameOnly = false;
+                              loginObj.usernameOnly = false;
                             });
                           }
                         }
@@ -444,9 +436,9 @@ class _LoginPage extends State<LoginPage> {
                     // if (usernameOnly == false)
                     Divider(), Divider(),
                     ElevatedButton(
-                      onPressed: (LogLogic.LoginLogic.usernameOnly == false)
+                      onPressed: (loginObj.usernameOnly == false)
                           ? loginObj.sendOPT1
-                          : (LogLogic.LoginLogic.usernameOnly == true)
+                          : (loginObj.usernameOnly == true)
                               ? loginObj.sendOTP
                               : null,
                       child: Text("Reset Password"),

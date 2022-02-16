@@ -1,89 +1,17 @@
-// ignore_for_file: no_logic_in_create_state, prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_print, curly_braces_in_flow_control_structures, use_key_in_widget_constructors, prefer_const_constructors_in_immutables, prefer_typing_uninitialized_variables, avoid_unnecessary_containers, deprecated_member_use
+// ignore_for_file:  prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_print, curly_braces_in_flow_control_structures, use_key_in_widget_constructors, prefer_const_constructors_in_immutables, prefer_typing_uninitialized_variables, avoid_unnecessary_containers, deprecated_member_use
 
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:experi/model.dart';
 import 'package:experi/available_planners/available_planners_logic.dart';
 
-class AvailableCourierPage extends StatefulWidget {
-  AvailableCourierPage({
-    this.planners = const [],
-    this.showrooms = const [],
-    this.budget = 0,
-    this.showplanner = false,
-    this.reviews = const [],
-    this.details = const [],
-    this.planner = "",
-    this.dateCreated = "",
-    this.clientPics = const [],
-    this.currentShowroom = const [],
-    this.fee = 0,
-    this.directCall = false,
-  });
-
-  final List planners;
-  final List showrooms;
-  final double budget;
-  final bool showplanner;
-
-  final List reviews;
-  final List details;
-  final List clientPics;
-  final List currentShowroom;
-  final String planner;
-  final String dateCreated;
-  final double fee;
-  final directCall;
-
+class AvailablePlannerPage extends StatefulWidget {
   @override
-  _AvailableCourierPage createState() => _AvailableCourierPage(
-        planners: planners,
-        showrooms: showrooms,
-        budget: budget,
-        showplanner: showplanner,
-        reviews: reviews,
-        details: details,
-        planner: planner,
-        dateCreated: dateCreated,
-        clientPics: clientPics,
-        currentShowroom: currentShowroom,
-        fee: fee,
-        directCall: directCall,
-      );
+  State<AvailablePlannerPage> createState() => _AvailablePlannerPage();
 }
 
-class _AvailableCourierPage extends State<AvailableCourierPage> {
-  _AvailableCourierPage({
-    this.planners = const [],
-    this.showrooms = const [],
-    this.budget = 0,
-    this.showplanner = false,
-    this.reviews = const [],
-    this.details = const [],
-    this.planner = "",
-    this.dateCreated = "",
-    this.clientPics = const [],
-    this.currentShowroom = const [],
-    this.fee = 0,
-    this.directCall = false,
-  });
-
-  final List planners;
-  final List showrooms;
-  final double budget;
-  final bool showplanner;
-
-  var callHome = false;
-  //var showplanner = false;
-  final List reviews;
-  final List details;
-  final List clientPics;
-  final List currentShowroom;
-  final String planner;
-  final String dateCreated;
-  final double fee;
-  final bool directCall;
-
+class _AvailablePlannerPage extends State<AvailablePlannerPage> {
+  final availablePlannerObj = AvailablePlannersLogic();
   @override
   Widget build(BuildContext context) {
     print('build called');
@@ -105,17 +33,17 @@ class _AvailableCourierPage extends State<AvailableCourierPage> {
       'Others: '
     ];
 
-    if (showplanner == false)
-      for (List item in planners) {
+    if (AvailablePlannersLogic.showplanner == false)
+      for (List item in AvailablePlannersLogic.planners) {
         print('planner list builder called...');
-        Widget starWidget = starBuilder(item[2] as int);
+        Widget starWidget = availablePlannerObj.starBuilder(item[2] as int);
         print('starlist built...');
-        List pics = showrooms[count];
+        List pics = AvailablePlannersLogic.showrooms[count];
 
         plannerWidgetList.add(
           GestureDetector(
             onTapUp: (value) {
-              getPlannerDetails(item, starWidget, pics);
+              availablePlannerObj.getPlannerDetails(item, starWidget, pics);
               /* setState(() {
                
               }); */
@@ -226,7 +154,9 @@ class _AvailableCourierPage extends State<AvailableCourierPage> {
                               ],
                             ),
                             Text(
-                              (item[3] * budget * 0.01).toString() + " Naira",
+                              (item[3] * AvailablePlannersLogic.budget * 0.01)
+                                      .toString() +
+                                  " Naira",
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
@@ -271,7 +201,7 @@ class _AvailableCourierPage extends State<AvailableCourierPage> {
 
     print('scaffold called');
     //courierWidget = Row(children: courierWidgetList);
-    if (showplanner == true) {
+    if (AvailablePlannersLogic.showplanner == true) {
       return Scaffold(
         appBar: AppBar(
           brightness: Brightness.dark,
@@ -282,7 +212,7 @@ class _AvailableCourierPage extends State<AvailableCourierPage> {
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               Text(
-                planner + "'s Profile",
+                AvailablePlannersLogic.planner + "'s Profile",
                 style: TextStyle(fontSize: 12),
               ),
             ],
@@ -320,10 +250,12 @@ class _AvailableCourierPage extends State<AvailableCourierPage> {
                                             child: Container(
                                               child: Image.network(
                                                 //planner's profile picture
-                                                (details[1].isNotEmpty)
+                                                (AvailablePlannersLogic
+                                                        .details[1].isNotEmpty)
                                                     ? Model.domain +
                                                         'img/' +
-                                                        details[1]
+                                                        AvailablePlannersLogic
+                                                            .details[1]
                                                     : Model.domain +
                                                         'img/' +
                                                         'default.png',
@@ -345,8 +277,11 @@ class _AvailableCourierPage extends State<AvailableCourierPage> {
                                   placeholder: "assets/images/imgloading.gif",
                                   image:
                                       //planner's profile picture
-                                      (details[1].isNotEmpty)
-                                          ? Model.domain + 'img/' + details[1]
+                                      (AvailablePlannersLogic
+                                              .details[1].isNotEmpty)
+                                          ? Model.domain +
+                                              'img/' +
+                                              AvailablePlannersLogic.details[1]
                                           : Model.domain +
                                               'img/' +
                                               'default.png',
@@ -369,7 +304,7 @@ class _AvailableCourierPage extends State<AvailableCourierPage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  planner,
+                                  AvailablePlannersLogic.planner,
                                   textAlign: TextAlign.right,
                                   style: TextStyle(
                                     fontSize: 16,
@@ -377,7 +312,7 @@ class _AvailableCourierPage extends State<AvailableCourierPage> {
                                   ),
                                 ),
                                 Text(
-                                  dateCreated,
+                                  AvailablePlannersLogic.dateCreated,
                                   textAlign: TextAlign.right,
                                   style: TextStyle(
                                     fontSize: 14,
@@ -385,7 +320,8 @@ class _AvailableCourierPage extends State<AvailableCourierPage> {
                                     color: Colors.grey,
                                   ),
                                 ),
-                                starBuilder(details[0] as int),
+                                availablePlannerObj.starBuilder(
+                                    AvailablePlannersLogic.details[0] as int),
                               ],
                             ),
                           ),
@@ -397,8 +333,8 @@ class _AvailableCourierPage extends State<AvailableCourierPage> {
                 Divider(),
                 Container(
                   child: CarouselSlider(
-                    items: (currentShowroom.isNotEmpty)
-                        ? currentShowroom
+                    items: (AvailablePlannersLogic.currentShowroom.isNotEmpty)
+                        ? AvailablePlannersLogic.currentShowroom
                             .map(
                               (pic) => Container(
                                 child: Image.network(
@@ -441,7 +377,9 @@ class _AvailableCourierPage extends State<AvailableCourierPage> {
                         );
                       }
                       return Text(
-                        element + details[eventIndex++].toString(),
+                        element +
+                            AvailablePlannersLogic.details[eventIndex++]
+                                .toString(),
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w300,
@@ -470,7 +408,9 @@ class _AvailableCourierPage extends State<AvailableCourierPage> {
                     ),
                     child: Column(
                       children: [
-                        for (int i = 0; i < reviews.length; i++)
+                        for (int i = 0;
+                            i < AvailablePlannersLogic.reviews.length;
+                            i++)
                           Container(
                             decoration: ShapeDecoration(
                               shape: Border(
@@ -483,7 +423,11 @@ class _AvailableCourierPage extends State<AvailableCourierPage> {
                             margin: EdgeInsets.only(
                               top: 5,
                               left: 5,
-                              bottom: (i == (reviews.length - 1)) ? 5 : 0,
+                              bottom: (i ==
+                                      (AvailablePlannersLogic.reviews.length -
+                                          1))
+                                  ? 5
+                                  : 0,
                               right: 5,
                             ),
                             padding: EdgeInsets.only(
@@ -517,10 +461,13 @@ class _AvailableCourierPage extends State<AvailableCourierPage> {
                                                     "assets/images/passport.jpg", */
                                                       Image.network(
                                                     //reviewer's profile picture
-                                                    (clientPics[i].isNotEmpty)
+                                                    (AvailablePlannersLogic
+                                                            .clientPics[i]
+                                                            .isNotEmpty)
                                                         ? Model.domain +
                                                             'img/' +
-                                                            clientPics[i]
+                                                            AvailablePlannersLogic
+                                                                .clientPics[i]
                                                         : Model.domain +
                                                             'img/' +
                                                             'default.png',
@@ -547,10 +494,12 @@ class _AvailableCourierPage extends State<AvailableCourierPage> {
                                           "assets/images/imgloading.gif",
                                       image:
                                           //reviewer's profile picture
-                                          (clientPics[i].isNotEmpty)
+                                          (AvailablePlannersLogic
+                                                  .clientPics[i].isNotEmpty)
                                               ? Model.domain +
                                                   'img/' +
-                                                  clientPics[i]
+                                                  AvailablePlannersLogic
+                                                      .clientPics[i]
                                               : Model.domain +
                                                   'img/' +
                                                   'default.png',
@@ -582,7 +531,8 @@ class _AvailableCourierPage extends State<AvailableCourierPage> {
                                           Flexible(
                                             child: Container(
                                               child: Text(
-                                                reviews[i][0],
+                                                AvailablePlannersLogic
+                                                    .reviews[i][0],
                                                 textAlign: TextAlign.left,
                                                 style: TextStyle(
                                                     fontSize: 16,
@@ -598,7 +548,8 @@ class _AvailableCourierPage extends State<AvailableCourierPage> {
                                                   EdgeInsets.only(left: 15),
                                               child: Text(
                                                 //date of completion
-                                                reviews[i][1],
+                                                AvailablePlannersLogic
+                                                    .reviews[i][1],
                                                 textAlign: TextAlign.right,
                                                 style: TextStyle(
                                                   fontSize: 13,
@@ -620,7 +571,8 @@ class _AvailableCourierPage extends State<AvailableCourierPage> {
                                           Flexible(
                                             child: Container(
                                               child: Text(
-                                                reviews[i][2],
+                                                AvailablePlannersLogic
+                                                    .reviews[i][2],
                                                 textAlign: TextAlign.left,
                                                 style: TextStyle(
                                                   fontSize: 14,
@@ -635,8 +587,9 @@ class _AvailableCourierPage extends State<AvailableCourierPage> {
                                       //rating
                                       Container(
                                         //padding: EdgeInsets.only(left: 10),
-                                        child:
-                                            starBuilder(reviews[i][3] as int),
+                                        child: availablePlannerObj.starBuilder(
+                                            AvailablePlannersLogic.reviews[i][3]
+                                                as int),
                                         //padding: EdgeInsets.only(left: 20),
                                       ),
                                       //),
@@ -652,7 +605,8 @@ class _AvailableCourierPage extends State<AvailableCourierPage> {
                                                       Model.deviceWidth * 0.6),
                                               //comment
                                               child: Text(
-                                                reviews[i][4],
+                                                AvailablePlannersLogic
+                                                    .reviews[i][4],
                                                 /* """jgjksdgjkgjkgsdjkgkjdgjkgdjkgjkgjkgjkgjkdsgjkgjkdgjkgjkdg jk
                                                 gdjkg dkgjktsd kgjkgdkj kg jkgdjksgk jkjgjkgdjk jkgjkgdkj gj g
                                               kgjkgdkj kj gjkdgjk gjkdgjkgkjg kjgdjkg kgsdgkjhgsd g ihkjgsdjhg
@@ -682,16 +636,19 @@ class _AvailableCourierPage extends State<AvailableCourierPage> {
                 /*  ],
                   ),
                 ), */
-                if (directCall == false)
+                if (AvailablePlannersLogic.directCall == false)
                   Container(
                     child: ElevatedButton(
                       onPressed: () {
-                        hirePlanner(fee, budget, planner);
+                        availablePlannerObj.hirePlanner(
+                            AvailablePlannersLogic.fee,
+                            AvailablePlannersLogic.budget,
+                            AvailablePlannersLogic.planner);
                       },
-                      child: Text("Hire $planner"),
+                      child: Text("Hire ${AvailablePlannersLogic.planner}"),
                     ),
                   ),
-                if (directCall == false) Divider(),
+                if (AvailablePlannersLogic.directCall == false) Divider(),
               ],
             ),
           ),

@@ -5,19 +5,15 @@ import 'package:flutter/material.dart';
 import 'package:experi/model.dart';
 
 class Notifications extends StatefulWidget {
-  Notifications(this.notifications);
-  final List notifications;
   @override
-  _Notifications createState() => _Notifications(notifications);
+  State<Notifications> createState() => _Notifications();
 }
 
 class _Notifications extends State<Notifications> {
-  _Notifications(this.notifications);
-  final List notifications;
-
+  final notificationObj = NotificationLogic();
   @override
   void dispose() {
-    clicked.dispose();
+    notificationObj.clicked.dispose();
     super.dispose();
   }
 
@@ -43,20 +39,21 @@ class _Notifications extends State<Notifications> {
         ),
       ),
       body: ListView.builder(
-          itemCount: notifications.length,
+          itemCount: NotificationLogic.notifications.length,
           itemBuilder: (context, index) {
-            return (notifications.isEmpty)
+            return (NotificationLogic.notifications.isEmpty)
                 ? Center(child: Text('No notifications'))
                 : ValueListenableBuilder(
-                    valueListenable: clicked,
+                    valueListenable: notificationObj.clicked,
                     builder: (BuildContext context, int value, Widget? child) {
                       print('clicked changed to $value');
 
                       //for (List item in notifications) {
-                      print(notifications[index][6]);
-                      print('clickedID: $clickedID');
-                      if (notifications[index][0] == clickedID) {
-                        notifications[index][6] = 1;
+                      print(NotificationLogic.notifications[index][6]);
+                      print('clickedID: ${notificationObj.clickedID}');
+                      if (NotificationLogic.notifications[index][0] ==
+                          notificationObj.clickedID) {
+                        NotificationLogic.notifications[index][6] = 1;
                       }
 
                       return Container(
@@ -69,14 +66,15 @@ class _Notifications extends State<Notifications> {
                           title: Row(
                             children: [
                               Text(
-                                notifications[index][5],
+                                NotificationLogic.notifications[index][5],
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ), //title
                               Text(
-                                notifications[index][1] +
+                                NotificationLogic.notifications[index][1] +
                                     ', ' +
-                                    notifications[index][2] +
-                                    notifications[index][6].toString(),
+                                    NotificationLogic.notifications[index][2] +
+                                    NotificationLogic.notifications[index][6]
+                                        .toString(),
                                 style: TextStyle(fontSize: 10),
                               ), //time+date
                             ],
@@ -94,16 +92,19 @@ class _Notifications extends State<Notifications> {
                           //dense: true,
 
                           subtitle: Text(
-                            notifications[index][4],
+                            NotificationLogic.notifications[index][4],
                           ), //body
                           onTap: () {
-                            clickedID = notifications[index][0];
-                            notifClicked(notifications[index][0]);
+                            notificationObj.clickedID =
+                                NotificationLogic.notifications[index][0];
+                            notificationObj.notifClicked(
+                                NotificationLogic.notifications[index][0]);
                           }, //notifyid
 
-                          tileColor: (notifications[index][6] == 0)
-                              ? Colors.grey[350]
-                              : Colors.white,
+                          tileColor:
+                              (NotificationLogic.notifications[index][6] == 0)
+                                  ? Colors.grey[350]
+                                  : Colors.white,
                         ),
                       );
                     }
