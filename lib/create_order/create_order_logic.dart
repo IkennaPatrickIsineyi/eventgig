@@ -54,7 +54,7 @@ findPlanner() {
     print(address);
     print(content);
 
-    BLoC.showProgressIndicator(Model.currentContext);
+    BLoC.showProgressIndicator();
 
     BLoC.sendMsg(content);
 
@@ -75,7 +75,6 @@ requestResult(result) {
   if (result['hit'] == 'no') {
     print('hit: no');
     BLoC.nullInputDialog(
-        Model.currentContext,
         "Sorry, no event planners at the moment...Keep retrying",
         'Unavailable');
   } else if (result['hit'] == 'yes') {
@@ -89,7 +88,16 @@ requestResult(result) {
       showrooms: result['showroom'],
       budget: result['budget'],
     );
-    Navigator.pushNamed(Model.currentContext, '/available_planners');
+    Navigator.pushNamed(Model.currentContext, '/available_planners')
+        .then((value) {
+      //remove/pop dialog's context from stack since the dialog has been popped
+      if (Model.contextQueue.isNotEmpty) {
+        Model.contextQueue.removeLast();
+
+        //set current context variable to the next context on the stack
+        Model.currentContext = Model.contextQueue.last;
+      }
+    });
 
     //  });
   }

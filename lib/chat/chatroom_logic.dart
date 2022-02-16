@@ -89,17 +89,18 @@ class ChatRoom {
       res = res['result'];
       if (res['status'] == 'hacker') {
         print('hacker');
-        BLoC.nullInputDialog(
-            Model.currentContext, "Failed hack attempt", 'Oops');
+        BLoC.nullInputDialog("Failed hack attempt", 'Oops');
 
         Navigator.pushNamedAndRemoveUntil(
-            Model.currentContext, '/loginpage', (route) => false);
-        /*  Navigator.pushAndRemoveUntil(
-            Model.currentContext,
-            MaterialPageRoute(
-              builder: (context) => LoginPage(),
-            ),
-            (route) => false); */
+            Model.currentContext, '/loginpage', (route) => false).then((value) {
+          //remove/pop dialog's context from stack since the dialog has been popped
+          if (Model.contextQueue.isNotEmpty) {
+            Model.contextQueue.removeLast();
+
+            //set current context variable to the next context on the stack
+            Model.currentContext = Model.contextQueue.last;
+          }
+        });
       } else if (res['status'] == 'sent') {
         int msgid = res['chatid'];
         String msgTime = TimeOfDay.fromDateTime(DateTime.now().toUtc())
@@ -138,7 +139,15 @@ class ChatRoom {
         print('Sorry, you could not hack us');
         //  if (fetchMore == true) jumpTimer.cancel();
         Navigator.pushNamedAndRemoveUntil(
-            Model.currentContext, '/loginpage', (route) => false);
+            Model.currentContext, '/loginpage', (route) => false).then((value) {
+          //remove/pop dialog's context from stack since the dialog has been popped
+          if (Model.contextQueue.isNotEmpty) {
+            Model.contextQueue.removeLast();
+
+            //set current context variable to the next context on the stack
+            Model.currentContext = Model.contextQueue.last;
+          }
+        });
       } else if (result['status'] == 'valid' /* && updating == false */) {
         //updating = true;
         print('Chats obtained successful');
@@ -187,22 +196,17 @@ class ChatRoom {
                 (result['chats'].length > 0) ? result['chats'].last[6] : 0,
           );
 
-          Navigator.pushNamed(Model.currentContext, '/chatroom_page');
-          /*   Navigator.push(
-            Model.currentContext,
-            MaterialPageRoute(
-              builder: (BuildContext context) => Chatroom(
-                msg,
-                result['userProfile'],
-                true,
-                "ChatroomSingle",
-                idOfLastChat:
-                    (result['chats'].length > 0) ? result['chats'].last[6] : 0,
-              ),
-            ),
-          ); */
+          Navigator.pushNamed(Model.currentContext, '/chatroom_page')
+              .then((value) {
+            //remove/pop dialog's context from stack since the dialog has been popped
+            if (Model.contextQueue.isNotEmpty) {
+              Model.contextQueue.removeLast();
+
+              //set current context variable to the next context on the stack
+              Model.currentContext = Model.contextQueue.last;
+            }
+          });
         }
-        //});
       }
       Model.socketNotifier.removeListener(getChatsEvent);
     }
@@ -215,7 +219,15 @@ class ChatRoom {
       if (result['status'] == 'hacker') {
         print('Sorry, you could not hack us');
         Navigator.pushNamedAndRemoveUntil(
-            Model.currentContext, '/loginpage', (route) => false);
+            Model.currentContext, '/loginpage', (route) => false).then((value) {
+          //remove/pop dialog's context from stack since the dialog has been popped
+          if (Model.contextQueue.isNotEmpty) {
+            Model.contextQueue.removeLast();
+
+            //set current context variable to the next context on the stack
+            Model.currentContext = Model.contextQueue.last;
+          }
+        });
       } else if (result['status'] == 'valid') {
         print('Chats deleted');
         deleted.addAll(_chatids);
@@ -243,24 +255,16 @@ class ChatRoom {
         directCall: true,
       );
 
-      Navigator.pushNamed(Model.currentContext, '/available_planners');
-      /* Navigator.push(
-        Model.currentContext,
-        MaterialPageRoute(
-          builder: (BuildContext context) => AvailableCourierPage(
-            reviews: res['reviews'],
-            currentShowroom: res['showroom'],
-            showplanner: true,
-            // fee: item[3],
-            details: res['details'],
-            clientPics: res['client_pics'],
-            planner: user,
-            dateCreated: res['details'][10],
-            directCall: true,
-          ),
-        ),
-      );
-      */
+      Navigator.pushNamed(Model.currentContext, '/available_planners')
+          .then((value) {
+        //remove/pop dialog's context from stack since the dialog has been popped
+        if (Model.contextQueue.isNotEmpty) {
+          Model.contextQueue.removeLast();
+
+          //set current context variable to the next context on the stack
+          Model.currentContext = Model.contextQueue.last;
+        }
+      });
       Model.socketNotifier.removeListener(getUserDetailsEvent);
     }
   }
@@ -286,50 +290,6 @@ class ChatRoom {
     //BLoC.showProgressIndicator(Model.currentContext);
 
     BLoC.sendMsg(content);
-    // if (sendMesgAdded == false)
-/* 
-  liste() {
-    Map<String, dynamic> res = Model.socketResult;
-    if (res['intro'] == 'sendchat') {
-      res = res['result'];
-      if (res['status'] == 'hacker') {
-        print('hacker');
-        BLoC.nullInputDialog(
-            Model.currentContext, "Failed hack attempt", 'Oops');
-        Navigator.pushAndRemoveUntil(
-            Model.currentContext,
-            MaterialPageRoute(
-              builder: (context) => LoginPage(),
-            ),
-            (route) => false);
-      } else if (res['status'] == 'sent') {
-        int msgid = res['chatid'];
-        String msgTime = TimeOfDay.fromDateTime(DateTime.now().toUtc())
-            .format(Model.currentContext);
-        print('sent');
-        print('msgid: $msgid');
-        print('msgtime: $msgTime');
-        print(Model.chats);
-        Model.chats[0][6] = msgid;
-        Model.chats[0][0] = msgTime;
-        print(Model.chats);
-
-        Model.memberOnlineStatus[_userProfile[0]]![2] = [
-          Model.username,
-          _userProfile[0],
-          res['time'],
-          res['date'],
-          msgBody
-        ];
-        print('setting state...');
-        /* int x = Model.selected.value;
-          Model.selected.value = x + 1; */
-        setState(() {});
-      }
-      Model.socketNotifier.removeListener(liste);
-    }
-  }
- */
     Model.socketNotifier.addListener(sendMesgEvent);
   }
 
@@ -346,84 +306,10 @@ class ChatRoom {
       'nextchatid': nextChatid.toString(),
     };
     print(content);
-    if (fetchMore == false) BLoC.showProgressIndicator(Model.currentContext);
+    if (fetchMore == false) BLoC.showProgressIndicator();
 
     BLoC.sendMsg(content);
     print('updating: $updating');
-    // if (getChatsAdded == false)
-    //   Model.socketNotifier.addListener(
-    /*  liste() {
-    print('liste called');
-    Map<String, dynamic> result = Model.socketResult;
-    if (result['intro'] == 'getchats') {
-      print('getchats listener called...');
-      result = result['result'];
-      if (result['status'] == 'hacker') {
-        print('Sorry, you could not hack us');
-        //  if (fetchMore == true) jumpTimer.cancel();
-        Navigator.pushAndRemoveUntil(
-            Model.currentContext,
-            MaterialPageRoute(
-              builder: (context) => LoginPage(),
-            ),
-            (route) => false);
-      } else if (result['status'] == 'valid' /* && updating == false */) {
-        //updating = true;
-        print('Chats obtained successful');
-        print(result);
-        if (fetchMore == true) {
-          print('fetchmore true');
-          if (result['chats'].isNotEmpty) {
-            // setState(() {
-            fetchMore = false;
-            refreshed = true;
-
-            nextChatid = result['chats'].last[6];
-            Model.chats.addAll(result['chats']);
-            //  streamControl.add(1);
-            print("getchat exited");
-            adjustOffset = false;
-            //setState(() {
-            showIndicator.value = false;
-            /* int x = Model.selected.value;
-              Model.selected.value = x + 1; */
-            setState(() {});
-            //});
-          } else {
-            adjustOffset = true;
-            fetchMore = false;
-            showIndicator.value = false;
-          }
-          //  });
-        } else {
-          print("redirecting");
-          //setState(() {
-          List msg = [];
-          print('pas1');
-          msg.addAll(result['chats']);
-          print('pas2');
-          Navigator.pop(Model.currentContext);
-          print('pas3');
-
-          Navigator.push(
-            Model.currentContext,
-            MaterialPageRoute(
-              builder: (BuildContext context) => Chatroom(
-                msg,
-                result['userProfile'],
-                true,
-                "ChatroomSingle",
-                idOfLastChat:
-                    (result['chats'].length > 0) ? result['chats'].last[6] : 0,
-              ),
-            ),
-          );
-        }
-        //});
-      }
-      Model.socketNotifier.removeListener(liste);
-    }
-  } */
 
     Model.socketNotifier.addListener(getChatsEvent);
   }
@@ -592,32 +478,6 @@ class ChatRoom {
     _chatids = chatids;
     BLoC.sendMsg(content);
 
-    //if (deleteChatsAdded == false)
-
-/*   liste() {
-    Map<String, dynamic> result = Model.socketResult;
-    if (result['intro'] == 'deletechats') {
-      result = result['result'];
-      if (result['status'] == 'hacker') {
-        print('Sorry, you could not hack us');
-        Navigator.pushAndRemoveUntil(
-            Model.currentContext,
-            MaterialPageRoute(
-              builder: (context) => LoginPage(),
-            ),
-            (route) => false);
-      } else if (result['status'] == 'valid') {
-        print('Chats deleted');
-        deleted.addAll(chatids);
-
-        selectedChats.clear();
-        int f = Model.selected.value + 1;
-        Model.selected.value = f;
-      }
-      Model.socketNotifier.removeListener(liste);
-    }
-  } */
-
     Model.socketNotifier.addListener(deleteChatsEvent);
   }
 
@@ -630,33 +490,9 @@ class ChatRoom {
       'sessionid': Model.sessionToken,
     };
 
-    BLoC.showProgressIndicator(Model.currentContext);
+    BLoC.showProgressIndicator();
 
     BLoC.sendMsg(content);
-
-    /*  liste() {
-    Map<String, dynamic> res = Model.socketResult;
-    if (res['intro'] == 'userdetails') {
-      res = res['result'];
-      Navigator.push(
-        Model.currentContext,
-        MaterialPageRoute(
-          builder: (BuildContext context) => AvailableCourierPage(
-            reviews: res['reviews'],
-            currentShowroom: res['showroom'],
-            showplanner: true,
-            // fee: item[3],
-            details: res['details'],
-            clientPics: res['client_pics'],
-            planner: user,
-            dateCreated: res['details'][10],
-            directCall: true,
-          ),
-        ),
-      );
-      Model.socketNotifier.removeListener(liste);
-    }
-  } */
 
     Model.socketNotifier.addListener(getUserDetailsEvent);
   }

@@ -27,8 +27,8 @@ class LoginLogic {
   Set formInputText = {};
 
   //TextEditingController control = TextEditingController();
-  static late final ValueNotifier textValidator;
-  static late final ValueNotifier<Set> pwdResetValidator;
+  late final ValueNotifier textValidator;
+  late final ValueNotifier<Set> pwdResetValidator;
 
   Set currentField = {};
 
@@ -82,7 +82,16 @@ class LoginLogic {
           false,
           accountDetails: result,
         );
-        Navigator.pushNamed(Model.currentContext, '/home_page');
+        Navigator.pushNamedAndRemoveUntil(
+            Model.currentContext, '/home_page', (route) => false).then((value) {
+          //remove/pop dialog's context from stack since the dialog has been popped
+          if (Model.contextQueue.isNotEmpty) {
+            Model.contextQueue.removeLast();
+
+            //set current context variable to the next context on the stack
+            Model.currentContext = Model.contextQueue.last;
+          }
+        });
       }
       if (Model.testMode == false) {
         Model.socketNotifier.removeListener(loginResultSockEvent);
@@ -103,7 +112,15 @@ class LoginLogic {
         usernameOnly = false;
         //  });
         LoginLogic.setter(true);
-        Navigator.pushNamed(Model.currentContext, '/loginpage');
+        Navigator.pushNamed(Model.currentContext, '/loginpage').then((value) {
+          //remove/pop dialog's context from stack since the dialog has been popped
+          if (Model.contextQueue.isNotEmpty) {
+            Model.contextQueue.removeLast();
+
+            //set current context variable to the next context on the stack
+            Model.currentContext = Model.contextQueue.last;
+          }
+        });
       } else if (result['status'] == 'invalid') {
         print('Invalid username');
         BLoC.snackMsg(Model.currentContext, "Invalid username");
@@ -126,7 +143,15 @@ class LoginLogic {
         print('Password Changed');
 
         Navigator.pushNamedAndRemoveUntil(
-            Model.currentContext, '/loginpage', (route) => false);
+            Model.currentContext, '/loginpage', (route) => false).then((value) {
+          //remove/pop dialog's context from stack since the dialog has been popped
+          if (Model.contextQueue.isNotEmpty) {
+            Model.contextQueue.removeLast();
+
+            //set current context variable to the next context on the stack
+            Model.currentContext = Model.contextQueue.last;
+          }
+        });
         BLoC.snackMsg(Model.currentContext, "Password Reset Successful");
       } else if (result['status'] == 'hacker') {
         print('hack attempt failed');
@@ -154,20 +179,6 @@ class LoginLogic {
     };
 
     BLoC.sendMsg(content);
-
-    /* liste() {
-      print('login called');
-      Map<String, dynamic> res = Model.socketResult;
-      if (res['intro'] == 'login') {
-        res = res['result'];
-        print(res);
-
-        loginResultSock(res);
-        print("rmoving listener...");
-        Model.socketNotifier.removeListener(liste);
-        print('listener removed');
-      }
-    } */
 
     print(Model.testMode);
     if (Model.testMode == true) {
@@ -197,46 +208,6 @@ class LoginLogic {
     if (result['login'] == 'valid') {
       BLoC.sendMsg(content);
 
-      /* liste() async {
-        print('savesession called');
-        Map<String, dynamic> res = Model.socketResult;
-        if (res["intro"] == "savesession") {
-          print("login complete...");
-          print('logging into pythonanywhere');
-          Map<String, dynamic> result = res['result'];
-          Model.sessionToken = result['sessionID'];
-          Model.emailVerified = (result['personal'][0][3] == 1) ? true : false;
-          print('so');
-          await Model.prefs.setString('sessionModel.token', Model.sessionToken);
-          await Model.prefs.setString('username', Model.username);
-          print('kno');
-          if (Model.tokenSet == false && !kIsWeb) {
-            //Model.token = await FirebaseMessaging.instance.getModel.token() as String;
-
-            Model.prefs.setString('firebase', Model.token);
-          }
-
-          Model.sessionLogin = false;
-
-          print("homepage being called... next");
-          Model.diableLogin = false;
-          if (Model.testMode = false) Navigator.pop(Model.currentContext);
-          //  setState(() {});
-          if (Model.testMode = false) {
-            Navigator.pushAndRemoveUntil(
-                Model.currentContext,
-                MaterialPageRoute(
-                  builder: (context) => HomePage(
-                      /*  false,
-                  accountDetails: result, */
-                      ),
-                ),
-                (route) => false);
-          }
-          Model.socketNotifier.removeListener(liste);
-        } 
-      }*/
-
       print(Model.testMode);
       if (Model.testMode == true) {
         loginResultSockEvent();
@@ -250,8 +221,7 @@ class LoginLogic {
       Model.diableLogin = false;
       //  });
 
-      BLoC.nullInputDialog(Model.currentContext,
-          "The password and username do not match", "Invalid");
+      BLoC.nullInputDialog("The password and username do not match", "Invalid");
     } else {
       if (Model.testMode == false) Navigator.pop(Model.currentContext);
       print("unknown error...");
@@ -288,38 +258,9 @@ class LoginLogic {
 
     print(address);
     print(content);
-    BLoC.showProgressIndicator(Model.currentContext);
+    BLoC.showProgressIndicator();
 
     BLoC.sendMsg(content);
-/* 
-    liste() {
-      Map<String, dynamic> result = Model.socketResult;
-      if (result['intro'] == 'passwordotp') {
-        Navigator.pop(Model.currentContext);
-        result = result['result'];
-        print(result);
-        if (result['status'] == 'sent') {
-          print('Email Sent');
-          BLoC.snackMsg(Model.currentContext, "Email Sent");
-          //  setState(() {
-          usernameOnly = false;
-          //  });
-          Navigator.push(
-            Model.currentContext,
-            MaterialPageRoute(
-              builder: (BuildContext context) => LoginPage(
-                resetpassword: true,
-              ),
-            ),
-          );
-        } else if (result['status'] == 'invalid') {
-          print('Invalid username');
-          BLoC.snackMsg(Model.currentContext, "Invalid username");
-        }
-        Model.socketNotifier.removeListener(liste);
-      }
-    }
- */
 
     if (Model.testMode == true) {
       sendOTPEvent();
@@ -342,42 +283,9 @@ class LoginLogic {
 
     print(address);
     print(content);
-    BLoC.showProgressIndicator(
-      Model.currentContext,
-    );
+    BLoC.showProgressIndicator();
 
     BLoC.sendMsg(content);
-/* 
-    liste() {
-      Map<String, dynamic> result = Model.socketResult;
-      if (result['intro'] == 'resetpassword') {
-        Navigator.pop(
-          Model.currentContext,
-        );
-        result = result['result'];
-        print(result);
-        if (result['status'] == 'changed') {
-          print('Password Changed');
-
-          Navigator.pushAndRemoveUntil(
-              Model.currentContext,
-              MaterialPageRoute(
-                builder: (context) => LoginPage(),
-              ),
-              (route) => false);
-          BLoC.snackMsg(Model.currentContext, "Password Reset Successful");
-        } else if (result['status'] == 'hacker') {
-          print('hack attempt failed');
-          BLoC.snackMsg(Model.currentContext, "hack attempt failed");
-        } else if (result['status'] == 'invalid') {
-          print('invalid otp');
-          BLoC.snackMsg(Model.currentContext, "Invalid OTP");
-        }
-        Model.socketNotifier.removeListener(liste);
-      }
-    }
- */
-
     if (Model.testMode == true) {
       verifyOTPEvent();
     } else {

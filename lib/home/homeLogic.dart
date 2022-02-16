@@ -4,15 +4,13 @@ import 'package:experi/chat/chatroom_logic.dart';
 import 'package:experi/existing_order/existing_order_logic.dart';
 import 'package:experi/model.dart';
 import 'package:experi/notification/notification_logic.dart';
+import 'package:experi/profile_setting/profile_setting_logic.dart';
 import 'package:flutter/material.dart';
 import 'package:experi/BLoC.dart' as BLoC;
-import 'package:experi/notification/notification_page.dart';
-
-import 'package:experi/profile_setting/profile_setting_page.dart';
 
 class HomeLogic {
-  static late final Map accountDetails;
-  static late final bool newAccount;
+  static late Map accountDetails;
+  static late bool newAccount;
 
   bool logoutSignal = false;
   bool viewDetails = false;
@@ -51,14 +49,30 @@ class HomeLogic {
 
         NotificationLogic.setter(result['unclicked']);
 
-        Navigator.pushNamedAndRemoveUntil(
-            Model.currentContext, '/loginpage', (route) => false);
+        Navigator.pushNamed(Model.currentContext, '/notification')
+            .then((value) {
+          //remove/pop dialog's context from stack since the dialog has been popped
+          if (Model.contextQueue.isNotEmpty) {
+            Model.contextQueue.removeLast();
+
+            //set current context variable to the next context on the stack
+            Model.currentContext = Model.contextQueue.last;
+          }
+        });
       } else if (result['status'] == 'hacker') {
         print('hack attempt failed');
         BLoC.snackMsg(Model.currentContext, "hack attempt failed");
 
         Navigator.pushNamedAndRemoveUntil(
-            Model.currentContext, '/loginpage', (route) => false);
+            Model.currentContext, '/loginpage', (route) => false).then((value) {
+          //remove/pop dialog's context from stack since the dialog has been popped
+          if (Model.contextQueue.isNotEmpty) {
+            Model.contextQueue.removeLast();
+
+            //set current context variable to the next context on the stack
+            Model.currentContext = Model.contextQueue.last;
+          }
+        });
       } else if (result['status'] == 'invalid') {
         print('Invalid request');
         BLoC.snackMsg(Model.currentContext, "Invalid request");
@@ -96,12 +110,29 @@ class HomeLogic {
           result['details'][15],
         );
 
-        Navigator.pushNamed(Model.currentContext, '/existing_order');
+        Navigator.pushNamed(Model.currentContext, '/existing_order')
+            .then((value) {
+          //remove/pop dialog's context from stack since the dialog has been popped
+          if (Model.contextQueue.isNotEmpty) {
+            Model.contextQueue.removeLast();
+
+            //set current context variable to the next context on the stack
+            Model.currentContext = Model.contextQueue.last;
+          }
+        });
       } else if (result['status'] == 'hacker') {
         print('hack attempt failed');
         BLoC.snackMsg(Model.currentContext, "hack attempt failed");
         Navigator.pushNamedAndRemoveUntil(
-            Model.currentContext, '/loginpage', (route) => false);
+            Model.currentContext, '/loginpage', (route) => false).then((value) {
+          //remove/pop dialog's context from stack since the dialog has been popped
+          if (Model.contextQueue.isNotEmpty) {
+            Model.contextQueue.removeLast();
+
+            //set current context variable to the next context on the stack
+            Model.currentContext = Model.contextQueue.last;
+          }
+        });
       } else if (result['status'] == 'invalid') {
         print('Invalid request');
         BLoC.snackMsg(Model.currentContext, "Invalid request");
@@ -119,18 +150,30 @@ class HomeLogic {
       if (result['status'] == 'valid') {
         print('Settings retrieved successfully');
 
-        Navigator.push(
-          Model.currentContext,
-          MaterialPageRoute(
-            builder: (BuildContext context) =>
-                ProfileSetting(result['settings'], result['planner']),
-          ),
-        );
+        ProfileLogic.setter(result['settings'], result['planner']);
+        Navigator.pushNamed(Model.currentContext, '/profile_setting')
+            .then((value) {
+          //remove/pop dialog's context from stack since the dialog has been popped
+          if (Model.contextQueue.isNotEmpty) {
+            Model.contextQueue.removeLast();
+
+            //set current context variable to the next context on the stack
+            Model.currentContext = Model.contextQueue.last;
+          }
+        });
       } else if (result['status'] == 'hacker') {
         print('hack attempt failed');
         BLoC.snackMsg(Model.currentContext, "hack attempt failed");
         Navigator.pushNamedAndRemoveUntil(
-            Model.currentContext, '/loginpage', (route) => false);
+            Model.currentContext, '/loginpage', (route) => false).then((value) {
+          //remove/pop dialog's context from stack since the dialog has been popped
+          if (Model.contextQueue.isNotEmpty) {
+            Model.contextQueue.removeLast();
+
+            //set current context variable to the next context on the stack
+            Model.currentContext = Model.contextQueue.last;
+          }
+        });
       } else if (result['status'] == 'invalid') {
         print('Invalid request');
         BLoC.snackMsg(Model.currentContext, "Invalid request");
@@ -175,12 +218,29 @@ class HomeLogic {
           multipleProfiles: result['profiles'],
         );
 
-        Navigator.pushNamed(Model.currentContext, '/chatroom_page');
+        Navigator.pushNamed(Model.currentContext, '/chatroom_page')
+            .then((value) {
+          //remove/pop dialog's context from stack since the dialog has been popped
+          if (Model.contextQueue.isNotEmpty) {
+            Model.contextQueue.removeLast();
+
+            //set current context variable to the next context on the stack
+            Model.currentContext = Model.contextQueue.last;
+          }
+        });
       } else if (result['status'] == 'hacker') {
         print('hack attempt failed');
         BLoC.snackMsg(Model.currentContext, "hack attempt failed");
         Navigator.pushNamedAndRemoveUntil(
-            Model.currentContext, '/loginpage', (route) => false);
+            Model.currentContext, '/loginpage', (route) => false).then((value) {
+          //remove/pop dialog's context from stack since the dialog has been popped
+          if (Model.contextQueue.isNotEmpty) {
+            Model.contextQueue.removeLast();
+
+            //set current context variable to the next context on the stack
+            Model.currentContext = Model.contextQueue.last;
+          }
+        });
       } else if (result['status'] == 'invalid') {
         print('Invalid request');
         BLoC.snackMsg(Model.currentContext, "Invalid request");
@@ -208,7 +268,15 @@ class HomeLogic {
         print('hack attempt failed');
         BLoC.snackMsg(Model.currentContext, "hack attempt failed");
         Navigator.pushNamedAndRemoveUntil(
-            Model.currentContext, '/loginpage', (route) => false);
+            Model.currentContext, '/loginpage', (route) => false).then((value) {
+          //remove/pop dialog's context from stack since the dialog has been popped
+          if (Model.contextQueue.isNotEmpty) {
+            Model.contextQueue.removeLast();
+
+            //set current context variable to the next context on the stack
+            Model.currentContext = Model.contextQueue.last;
+          }
+        });
       }
       Model.socketNotifier.removeListener(sendOTPEvent);
     }
@@ -229,7 +297,15 @@ class HomeLogic {
         print('hack attempt failed');
         BLoC.snackMsg(Model.currentContext, "hack attempt failed");
         Navigator.pushNamedAndRemoveUntil(
-            Model.currentContext, '/loginpage', (route) => false);
+            Model.currentContext, '/loginpage', (route) => false).then((value) {
+          //remove/pop dialog's context from stack since the dialog has been popped
+          if (Model.contextQueue.isNotEmpty) {
+            Model.contextQueue.removeLast();
+
+            //set current context variable to the next context on the stack
+            Model.currentContext = Model.contextQueue.last;
+          }
+        });
       } else if (result['status'] == 'invalid') {
         print('invalid otp');
         BLoC.snackMsg(Model.currentContext, "Invalid OTP");
@@ -264,7 +340,7 @@ class HomeLogic {
 
     print(address);
     print(content);
-    BLoC.showProgressIndicator(Model.currentContext);
+    BLoC.showProgressIndicator();
 
     BLoC.sendMsg(content);
 
@@ -294,7 +370,7 @@ class HomeLogic {
 
     print(address);
     print(content);
-    BLoC.showProgressIndicator(Model.currentContext);
+    BLoC.showProgressIndicator();
 
     BLoC.sendMsg(content);
 
@@ -314,7 +390,7 @@ class HomeLogic {
 
     print(address);
     print(content);
-    BLoC.showProgressIndicator(Model.currentContext);
+    BLoC.showProgressIndicator();
 
     BLoC.sendMsg(content);
 
@@ -334,7 +410,7 @@ class HomeLogic {
 
     print(address);
     print(content);
-    BLoC.showProgressIndicator(Model.currentContext);
+    BLoC.showProgressIndicator();
 
     BLoC.sendMsg(content);
 
@@ -348,7 +424,7 @@ class HomeLogic {
     } else if (direction == 'chat') {
       chatHistory();
     } else if (direction == 'logout') {
-      BLoC.logout(Model.currentContext);
+      BLoC.logout();
     }
   }
 
@@ -366,7 +442,7 @@ class HomeLogic {
 
     print(address);
     print(content);
-    BLoC.showProgressIndicator(Model.currentContext);
+    BLoC.showProgressIndicator();
 
     BLoC.sendMsg(content);
 
@@ -387,7 +463,7 @@ class HomeLogic {
 
     print(address);
     print(content);
-    BLoC.showProgressIndicator(Model.currentContext);
+    BLoC.showProgressIndicator();
 
     BLoC.sendMsg(content);
 
@@ -517,7 +593,7 @@ class HomeLogic {
                             }),
                         //padding: EdgeInsets.only(left: 5, top: 5),
                         child: FadeInImage.assetNetwork(
-                          placeholder: "assets/images/imgloading.gif",
+                          placeholder: "images/imgloading.gif",
                           image: (picsList[count].isNotEmpty)
                               ? Model.domain + 'img/' + picsList[count][0][0]
                               : Model.domain + 'img/' + 'default.png',

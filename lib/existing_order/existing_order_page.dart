@@ -15,7 +15,10 @@ class _ExixtingOrderDetailPage extends State<ExixtingOrderDetailPage> {
   final existingOrderLogic = ExistingOrder();
   @override
   Widget build(BuildContext context) {
+    Model.contextQueue.addLast(context);
+    Model.currentContext = context;
     print('existing order called...');
+
     Model.currentRoute = "ExixtingOrderDetailPage";
 
     Model.prefs.setString("currentRoute", "ExixtingOrderDetailPage");
@@ -598,10 +601,11 @@ class _ExixtingOrderDetailPage extends State<ExixtingOrderDetailPage> {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    if (existingOrderLogic.review.isEmpty)
+                    if (existingOrderLogic.review.isEmpty) {
                       existingOrderLogic.textValidator.value = 1;
+                    }
                     if (existingOrderLogic.pos <= 0) {
-                      BLoC.nullInputDialog(context,
+                      BLoC.nullInputDialog(
                           "Rate the user on a scale of 5", "Rating missing");
                     }
                     if (existingOrderLogic.pos > 0 &&

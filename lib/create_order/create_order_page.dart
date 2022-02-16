@@ -13,6 +13,8 @@ class CreateOrderPage extends StatefulWidget {
 class _CreateOrderPage extends State<CreateOrderPage> {
   @override
   Widget build(BuildContext context) {
+    Model.contextQueue.addLast(context);
+    Model.currentContext = context;
     Model.currentRoute = "CreateOrderPage";
     Model.prefs.setString("currentRoute", "CreateOrderPage");
     String dateLabel = "Select Event Date";
@@ -477,10 +479,10 @@ class _CreateOrderPage extends State<CreateOrderPage> {
 
                     if (eventType == "Select Event Type") {
                       BLoC.nullInputDialog(
-                          context, "Select event type", "Event type missing");
+                          "Select event type", "Event type missing");
                     } else if (eventDate.isEmpty) {
                       BLoC.nullInputDialog(
-                          context, "Select event date", "Event date missing");
+                          "Select event date", "Event date missing");
                     }
 
                     if (city.isNotEmpty &&

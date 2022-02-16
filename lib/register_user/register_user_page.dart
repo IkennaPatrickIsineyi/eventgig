@@ -17,6 +17,8 @@ class _RegisterPage extends State<RegisterPage> {
   final registerObj = RegisterLogic();
   @override
   Widget build(BuildContext context) {
+    Model.contextQueue.addLast(context);
+    Model.currentContext = context;
     Model.currentRoute = "register";
     Model.prefs.setString("currentRoute", "register");
     var genderItems = [
@@ -56,7 +58,16 @@ class _RegisterPage extends State<RegisterPage> {
                 alignment: Alignment.center,
                 onPressed: () {
                   Navigator.pushNamedAndRemoveUntil(
-                      Model.currentContext, '/loginpage', (route) => false);
+                          Model.currentContext, '/loginpage', (route) => false)
+                      .then((value) {
+                    //remove/pop dialog's context from stack since the dialog has been popped
+                    if (Model.contextQueue.isNotEmpty) {
+                      Model.contextQueue.removeLast();
+
+                      //set current context variable to the next context on the stack
+                      Model.currentContext = Model.contextQueue.last;
+                    }
+                  });
                 },
                 icon: Icon(Icons.login),
               ),

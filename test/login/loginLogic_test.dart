@@ -7,7 +7,6 @@ import 'package:experi/model.dart';
 void main() {
   Model.testMode = true;
   Model.username = 'get';
-  LoginLogic.password = '123';
   Model.setter();
   var loginObj = LoginLogic();
 

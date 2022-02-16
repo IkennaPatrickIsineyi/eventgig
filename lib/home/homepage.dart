@@ -16,6 +16,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    Model.contextQueue.addLast(context);
+    Model.currentContext = context;
     Model.prefs.setString("currentRoute", "homepage");
     Model.currentRoute = "homepage";
     print('welcome home');
@@ -151,8 +153,9 @@ class _HomePageState extends State<HomePage> {
                           ),
                           ElevatedButton(
                             onPressed: () {
-                              if (homePageLogic.otp.isNotEmpty)
+                              if (homePageLogic.otp.isNotEmpty) {
                                 homePageLogic.verifyOTP();
+                              }
                             },
                             child: Text("Submit Code"),
                           )
@@ -166,8 +169,17 @@ class _HomePageState extends State<HomePage> {
                           onPressed: () {
                             (Model.emailVerified == true)
                                 ? Navigator.pushNamed(context, '/create_order')
+                                    .then((value) {
+                                    //remove/pop dialog's context from stack since the dialog has been popped
+                                    if (Model.contextQueue.isNotEmpty) {
+                                      Model.contextQueue.removeLast();
+
+                                      //set current context variable to the next context on the stack
+                                      Model.currentContext =
+                                          Model.contextQueue.last;
+                                    }
+                                  })
                                 : BLoC.nullInputDialog(
-                                    context,
                                     "email verification required",
                                     "",
                                     sendCode: homePageLogic.sendOTP,
@@ -321,7 +333,7 @@ class _HomePageState extends State<HomePage> {
                                       homePageLogic.pendingPicList),
                                 ),
                                 onRefresh: () {
-                                  BLoC.block(context);
+                                  BLoC.block();
                                   return homePageLogic.reload();
                                 }),
                             RefreshIndicator(
@@ -334,7 +346,7 @@ class _HomePageState extends State<HomePage> {
                                       homePageLogic.scheduledPicList),
                                 ),
                                 onRefresh: () {
-                                  BLoC.block(context);
+                                  BLoC.block();
                                   return homePageLogic.reload();
                                 }),
                             RefreshIndicator(
@@ -347,7 +359,7 @@ class _HomePageState extends State<HomePage> {
                                       homePageLogic.completedPicList),
                                 ),
                                 onRefresh: () {
-                                  BLoC.block(context);
+                                  BLoC.block();
                                   return homePageLogic.reload();
                                 }),
                           ],

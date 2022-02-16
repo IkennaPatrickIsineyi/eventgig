@@ -23,8 +23,7 @@ class RegisterLogic {
     if (password2.isEmpty) textValidator.value.add(4);
 
     if (gender == "Select gender") {
-      BLoC.nullInputDialog(
-          Model.currentContext, "Select your gender", "Gender missing");
+      BLoC.nullInputDialog("Select your gender", "Gender missing");
     }
 
     if (Model.username.isNotEmpty &&
@@ -50,7 +49,7 @@ class RegisterLogic {
 
     print(param);
     print(addr);
-    BLoC.showProgressIndicator(Model.currentContext);
+    BLoC.showProgressIndicator();
 
     BLoC.sendMsg(param);
     //socketNotifier.addListener(() { })
@@ -68,18 +67,16 @@ class RegisterLogic {
           if (result['username'] == 'taken' &&
               result['name'] == 'taken' &&
               result['email'] == 'taken') {
-            BLoC.nullInputDialog(Model.currentContext,
+            BLoC.nullInputDialog(
                 "Username and email are not available", 'Oops');
           } else if (result['username'] == 'taken' &&
               result['email'] == 'taken') {
-            BLoC.nullInputDialog(Model.currentContext,
+            BLoC.nullInputDialog(
                 "Username and email are not available", 'Oops');
           } else if (result['username'] == 'taken') {
-            BLoC.nullInputDialog(
-                Model.currentContext, "Username is not available", 'Oops');
+            BLoC.nullInputDialog("Username is not available", 'Oops');
           } else if (result['email'] == 'taken') {
-            BLoC.nullInputDialog(
-                Model.currentContext, "Email is not available", 'Oops');
+            BLoC.nullInputDialog("Email is not available", 'Oops');
           }
         } else if (result['valid'] == 'yes') {
           //user = result['usertype'];
@@ -94,7 +91,16 @@ class RegisterLogic {
           }); */
           HomeLogic.setter(true);
           Navigator.pushNamedAndRemoveUntil(
-              Model.currentContext, '/home_page', (route) => false);
+                  Model.currentContext, '/home_page', (route) => false)
+              .then((value) {
+            //remove/pop dialog's context from stack since the dialog has been popped
+            if (Model.contextQueue.isNotEmpty) {
+              Model.contextQueue.removeLast();
+
+              //set current context variable to the next context on the stack
+              Model.currentContext = Model.contextQueue.last;
+            }
+          });
         }
         Model.socketNotifier.removeListener(liste);
       } else if (result['intro'] == 'regprocError') {

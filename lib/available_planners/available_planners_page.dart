@@ -15,6 +15,9 @@ class _AvailablePlannerPage extends State<AvailablePlannerPage> {
   @override
   Widget build(BuildContext context) {
     print('build called');
+
+    Model.contextQueue.addLast(context);
+    Model.currentContext = context;
     Model.currentRoute = "AvailableCourierPage";
     Model.prefs.setString("currentRoute", "AvailableCourierPage");
     List<Widget> plannerWidgetList = [];

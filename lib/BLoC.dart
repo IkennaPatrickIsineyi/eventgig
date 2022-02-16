@@ -3,12 +3,11 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:experi/home/homeLogic.dart';
 import 'package:http/http.dart' as http;
 import 'package:web_socket_channel/web_socket_channel.dart' as socket;
 import 'package:flutter/material.dart';
 import 'package:experi/model.dart';
-import 'package:experi/login/loginpage.dart';
-import 'package:experi/home/homepage.dart';
 
 sendMsgEvent(event) {
   Map<String, dynamic> res = jsonDecode(event);
@@ -47,23 +46,32 @@ logoutEvent() async {
       // webSock.sink.close(1000);
 
       snackMsg(Model.currentContext, "Already logged out");
-      Navigator.pushAndRemoveUntil(
-          Model.currentContext,
-          MaterialPageRoute(
-            builder: (context) => LoginPage(),
-          ),
-          (route) => false);
+
+      Navigator.pushNamedAndRemoveUntil(
+          Model.currentContext, '/loginpage', (route) => false).then((value) {
+        //remove/pop dialog's context from stack since the dialog has been popped
+        if (Model.contextQueue.isNotEmpty) {
+          Model.contextQueue.removeLast();
+
+          //set current context variable to the next context on the stack
+          Model.currentContext = Model.contextQueue.last;
+        }
+      });
     } else if (res['status'] == 'valid') {
       print('Logged out');
 
       snackMsg(Model.currentContext, "Logged out");
 
-      Navigator.pushAndRemoveUntil(
-          Model.currentContext,
-          MaterialPageRoute(
-            builder: (context) => LoginPage(),
-          ),
-          (route) => false);
+      Navigator.pushNamedAndRemoveUntil(
+          Model.currentContext, '/loginpage', (route) => false).then((value) {
+        //remove/pop dialog's context from stack since the dialog has been popped
+        if (Model.contextQueue.isNotEmpty) {
+          Model.contextQueue.removeLast();
+
+          //set current context variable to the next context on the stack
+          Model.currentContext = Model.contextQueue.last;
+        }
+      });
     }
   }
 }
@@ -78,24 +86,34 @@ reloadHomeEvent() {
       print('Secondary login successful');
       Model.emailVerified = (res['personal'][0][3] == 1) ? true : false;
 
-      Navigator.pushAndRemoveUntil(
-          Model.currentContext,
-          MaterialPageRoute(
-            builder: (context) => HomePage(
-              false,
-              accountDetails: Model.socketResult['result'],
-            ),
-          ),
-          (route) => false);
+      HomeLogic.setter(
+        false,
+        accountDetails: Model.socketResult['result'],
+      );
+      Navigator.pushNamedAndRemoveUntil(
+          Model.currentContext, '/home_page', (route) => false).then((value) {
+        //remove/pop dialog's context from stack since the dialog has been popped
+        if (Model.contextQueue.isNotEmpty) {
+          Model.contextQueue.removeLast();
+
+          //set current context variable to the next context on the stack
+          Model.currentContext = Model.contextQueue.last;
+        }
+      });
     } else if (res['login'] == 'hacker') {
       print('hack attempt failed');
       snackMsg(Model.currentContext, "hack attempt failed");
-      Navigator.pushAndRemoveUntil(
-          Model.currentContext,
-          MaterialPageRoute(
-            builder: (context) => LoginPage(),
-          ),
-          (route) => false);
+
+      Navigator.pushNamedAndRemoveUntil(
+          Model.currentContext, '/loginpage', (route) => false).then((value) {
+        //remove/pop dialog's context from stack since the dialog has been popped
+        if (Model.contextQueue.isNotEmpty) {
+          Model.contextQueue.removeLast();
+
+          //set current context variable to the next context on the stack
+          Model.currentContext = Model.contextQueue.last;
+        }
+      });
     } else {
       print('dead end');
       Navigator.pop(Model.currentContext);
@@ -114,6 +132,7 @@ sendMsg(Map<String, dynamic> payload) {
     Model.webSock.stream.listen(sendMsgEvent);
   }
   print('socket sending...');
+
   Model.webSock.sink.add(jsonEncode(payload));
 }
 
@@ -130,15 +149,17 @@ Size getTextSize(String text, TextStyle style, BuildContext context) {
   return txtPainter.size;
 }
 
-nullInputDialog(BuildContext context, String alertMsg, String alertTitle,
+nullInputDialog(String alertMsg, String alertTitle,
     {bool timed = false,
     int time = 0,
     void Function()? sendCode,
     bool email = false}) {
   showDialog(
-    context: context,
+    context: Model.currentContext,
     builder: (BuildContext contxt) {
-      print('object');
+      Model.contextQueue.addLast(contxt);
+      Model.currentContext = contxt;
+      print('nullInputDialog');
       return StatefulBuilder(
         builder: (context, setState) {
           return AlertDialog(
@@ -193,85 +214,26 @@ nullInputDialog(BuildContext context, String alertMsg, String alertTitle,
         },
       );
     },
-  );
+  ).then((value) {
+    //remove/pop dialog's context from stack since the dialog has been popped
+    if (Model.contextQueue.isNotEmpty) {
+      Model.contextQueue.removeLast();
+
+      //set current context variable to the next context on the stack
+      Model.currentContext = Model.contextQueue.last;
+    }
+  });
 }
 
-toast(
-  BuildContext context,
-  String alertMsg, {
-  bool timed = false,
-  int time = 0,
-  void Function()? sendCode,
-  bool email = false,
-  bool dismissButton = false,
-}) {
-  showDialog(
-    barrierColor: Colors.transparent,
-    barrierDismissible: (dismissButton == true) ? false : true,
-    context: context,
-    builder: (BuildContext contxt) {
-      if (timed == true && time != 0) {
-        Timer(Duration(seconds: time), () {
-          Navigator.pop(context);
-        });
-      }
-      return Row(
-        //scrollDirection: Axis.horizontal,
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            padding: EdgeInsets.only(left: 10, top: 5, bottom: 5, right: 5),
-            margin: EdgeInsets.only(bottom: 20),
-            decoration: BoxDecoration(
-              color: Colors.black,
-              borderRadius: BorderRadius.all(
-                Radius.circular(20),
-              ),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  margin: EdgeInsets.only(
-                      bottom: (dismissButton == true) ? 6 : 0,
-                      right: (dismissButton == true) ? 20 : 0),
-                  child: Text(
-                    alertMsg,
-                    style: TextStyle(
-                      decoration: TextDecoration.none,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-                if (dismissButton == true)
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: Text("Dismiss"),
-                  )
-              ],
-            ),
-          )
-        ],
-      );
-    },
-  );
-}
-
-showProgressIndicator(BuildContext context) {
+showProgressIndicator() {
   showDialog(
       barrierDismissible: false,
       useRootNavigator: false,
-      context: context,
+      context: Model.currentContext,
       builder: (BuildContext contxt) {
-        print('object');
+        Model.contextQueue.addLast(contxt);
+        Model.currentContext = contxt;
+        print('showProgressIndicator');
 
         //return StatefulBuilder(builder: (context, setState) {
         return Center(
@@ -280,21 +242,39 @@ showProgressIndicator(BuildContext context) {
           widthFactor: 0.1,
         );
         //});
-      });
+      }).then((value) {
+    //remove/pop dialog's context from stack since the dialog has been popped
+    if (Model.contextQueue.isNotEmpty) {
+      Model.contextQueue.removeLast();
+
+      //set current context variable to the next context on the stack
+      Model.currentContext = Model.contextQueue.last;
+    }
+  });
 }
 
-block(BuildContext context) {
+block() {
   showDialog(
       barrierDismissible: false,
       useRootNavigator: false,
-      context: context,
+      context: Model.currentContext,
       builder: (BuildContext contxt) {
+        Model.contextQueue.addLast(contxt);
+        Model.currentContext = contxt;
         print('blocked');
 
         //return StatefulBuilder(builder: (context, setState) {
         return Text('');
         //});
-      });
+      }).then((value) {
+    //remove/pop dialog's context from stack since the dialog has been popped
+    if (Model.contextQueue.isNotEmpty) {
+      Model.contextQueue.removeLast();
+
+      //set current context variable to the next context on the stack
+      Model.currentContext = Model.contextQueue.last;
+    }
+  });
 }
 
 Future<dynamic> sendRequest(
@@ -317,7 +297,7 @@ Future<dynamic> sendRequest(
   }
 }
 
-logout(BuildContext context) {
+logout() {
   print("logout called");
 
   Uri address = Uri.parse(Model.domain + "logout");
@@ -327,7 +307,7 @@ logout(BuildContext context) {
     "sessionid": Model.sessionToken,
   };
 
-  showProgressIndicator(context);
+  showProgressIndicator();
 
   sendMsg(content);
 
@@ -346,15 +326,25 @@ reloadHome() {
       useRootNavigator: false,
       context: Model.currentContext,
       builder: (BuildContext contxt) {
+        Model.contextQueue.addLast(contxt);
+        Model.currentContext = contxt;
         print('dialog');
 
         //return StatefulBuilder(builder: (context, setState) {
         return LinearProgressIndicator();
         //});
-      });
+      }).then((value) {
+    //remove/pop dialog's context from stack since the dialog has been popped
+    if (Model.contextQueue.isNotEmpty) {
+      Model.contextQueue.removeLast();
 
-  Model.deviceWidth = MediaQuery.of(Model.currentContext).size.width;
-  Model.deviceHeight = MediaQuery.of(Model.currentContext).size.height;
+      //set current context variable to the next context on the stack
+      Model.currentContext = Model.contextQueue.last;
+    }
+  });
+
+  //Model.deviceWidth = MediaQuery.of(Model.currentContext).size.width;
+  // Model.deviceHeight = MediaQuery.of(Model.currentContext).size.height;
   if (Model.sessionLogin == true) {
     Model.username = Model.prefs.getString('username') as String;
     Model.sessionToken = Model.prefs.getString('sessionToken') as String;
@@ -376,14 +366,4 @@ reloadHome() {
   sendMsg(content);
 
   Model.socketNotifier.addListener(reloadHomeEvent);
-}
-
-class provider {
-  static ValueNotifier<String> blocEars = ValueNotifier("f");
-  static check() {
-    //x.value = Model.name;
-    blocEars.addListener(() {
-      print("new name: ${Model.name}");
-    });
-  }
 }

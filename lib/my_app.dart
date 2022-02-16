@@ -5,8 +5,10 @@ import 'package:experi/existing_order/existing_order_page.dart';
 import 'package:experi/home/homepage.dart';
 import 'package:experi/login/loginpage.dart';
 import 'package:experi/model.dart';
+import 'package:experi/notification/notification_page.dart';
 import 'package:experi/profile_setting/profile_setting_page.dart';
 import 'package:experi/register_user/register_user_page.dart';
+import 'package:experi/showroom/showroom_page.dart';
 import 'package:flutter/material.dart';
 
 class MyApp extends StatelessWidget {
@@ -18,6 +20,7 @@ class MyApp extends StatelessWidget {
     //  BLoC.provider.check();
 
     Model.setter();
+    Model.resetStatics();
 
     return MaterialApp(
       theme: ThemeData(
@@ -33,6 +36,8 @@ class MyApp extends StatelessWidget {
         '/home_page': (BuildContext context) => HomePage(),
         '/profile_setting': (BuildContext context) => ProfileSetting(),
         '/register': (BuildContext context) => RegisterPage(),
+        '/showroom': (BuildContext context) => Showroom(),
+        '/notification': (BuildContext context) => Notifications(),
       },
     );
   }

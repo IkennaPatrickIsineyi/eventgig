@@ -19,6 +19,8 @@ class _Notifications extends State<Notifications> {
 
   @override
   Widget build(BuildContext context) {
+    Model.contextQueue.addLast(context);
+    Model.currentContext = context;
     Model.currentRoute = "Notifications";
     Model.prefs.setString("currentRoute", "Notifications");
     return Scaffold(

@@ -16,6 +16,8 @@ class _ProfileSetting extends State<ProfileSetting> {
 
   @override
   Widget build(BuildContext context) {
+    Model.contextQueue.addLast(context);
+    Model.currentContext = context;
     Model.currentRoute = "ProfileSetting";
     Model.prefs.setString("currentRoute", "ProfileSetting");
 
@@ -347,11 +349,10 @@ class _ProfileSetting extends State<ProfileSetting> {
                               profileObj.saveChanges();
                             } else if (profileObj.fee.isEmpty &&
                                 profileObj.planner == 'Yes') {
-                              nullInputDialog(
-                                  context, "Fee is required", 'Null Input');
+                              nullInputDialog("Fee is required", 'Null Input');
                             } else if (profileObj.email.isEmpty) {
                               nullInputDialog(
-                                  context, "Email is required", 'Null Input');
+                                  "Email is required", 'Null Input');
                             }
                           },
                           label: Text("Save"),

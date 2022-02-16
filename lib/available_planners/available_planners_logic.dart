@@ -66,7 +66,16 @@ class AvailablePlannersLogic {
       //  planner= _planner,
       // dateCreated= _dateCreated
 
-      Navigator.pushNamed(Model.currentContext, '/available_planners');
+      Navigator.pushNamed(Model.currentContext, '/available_planners')
+          .then((value) {
+        //remove/pop dialog's context from stack since the dialog has been popped
+        if (Model.contextQueue.isNotEmpty) {
+          Model.contextQueue.removeLast();
+
+          //set current context variable to the next context on the stack
+          Model.currentContext = Model.contextQueue.last;
+        }
+      });
 
       Model.socketNotifier.removeListener(getPlannerDetailsEvent);
     }
@@ -86,15 +95,9 @@ class AvailablePlannersLogic {
         print('Order placed successfully');
         BLoC.snackMsg(Model.currentContext, "Order Placed");
         BLoC.reloadHome();
-        /* Navigator.pushAndRemoveUntil(
-              Model.currentContext,
-              MaterialPageRoute(
-                builder: (context) => ReloadHomePage(),
-              ),
-              (route) => false); */
       } else if (result['status'] == 'hacker') {
         print('hack attempt failed');
-        BLoC.logout(Model.currentContext);
+        BLoC.logout();
         //snackMsg(context, "hack attempt failed");
       }
       Model.socketNotifier.removeListener(hirePlannerEvent);
@@ -114,34 +117,9 @@ class AvailablePlannersLogic {
     _pics = pics;
     // _planner = item[0];
 
-    BLoC.showProgressIndicator(Model.currentContext);
+    BLoC.showProgressIndicator();
 
     BLoC.sendMsg(content);
-
-    /* liste() {
-    Map<String, dynamic> res = Model.socketResult;
-    if (res['intro'] == 'plannerdetails') {
-      Navigator.pop(Model.currentContext);
-
-      res = res['result'];
-      Navigator.push(
-        Model.currentContext,
-        MaterialPageRoute(
-          builder: (BuildContext context) => AvailableCourierPage(
-              reviews: res['reviews'],
-              currentShowroom: pics,
-              showplanner: true,
-              fee: item[3].toDouble(),
-              //problematic must be a number not smi
-              details: res['details'],
-              clientPics: res['client_pics'],
-              planner: item[0],
-              dateCreated: item[4]),
-        ),
-      );
-      Model.socketNotifier.removeListener(liste);
-    }
-  } */
 
     Model.socketNotifier.addListener(getPlannerDetailsEvent);
   }
@@ -173,38 +151,9 @@ class AvailablePlannersLogic {
 
     print(address);
     print(content);
-    BLoC.showProgressIndicator(Model.currentContext);
+    BLoC.showProgressIndicator();
 
     BLoC.sendMsg(content);
-
-    /* liste() {
-    Map<String, dynamic> result = Model.socketResult;
-    if (result['intro'] == 'hireproc') {
-      Navigator.pop(Model.currentContext);
-      result = result['result'];
-      print(result);
-      if (result['status'] == 'not available') {
-        print('Sorry, the planner is no longer available');
-        BLoC.snackMsg(
-            Model.currentContext, "Sorry, the planner is no longer available");
-      } else if (result['status'] == 'available') {
-        print('Order placed successfully');
-        BLoC.snackMsg(Model.currentContext, "Order Placed");
-        BLoC.reloadHome();
-        /* Navigator.pushAndRemoveUntil(
-              Model.currentContext,
-              MaterialPageRoute(
-                builder: (context) => ReloadHomePage(),
-              ),
-              (route) => false); */
-      } else if (result['status'] == 'hacker') {
-        print('hack attempt failed');
-        BLoC.logout(Model.currentContext);
-        //snackMsg(context, "hack attempt failed");
-      }
-      Model.socketNotifier.removeListener(liste);
-    }
-  } */
 
     Model.socketNotifier.addListener(hirePlannerEvent);
   }

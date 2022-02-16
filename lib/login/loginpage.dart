@@ -6,6 +6,8 @@ import 'package:experi/BLoC.dart' as BLoC;
 import 'package:experi/login/loginLogic.dart';
 
 class LoginPage extends StatefulWidget {
+  // const LoginPage({Key? key}) : super(key: key);
+
   @override
   State<LoginPage> createState() => _LoginPage();
 }
@@ -15,20 +17,22 @@ class _LoginPage extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    LoginLogic.textValidator = ValueNotifier(0);
-    LoginLogic.pwdResetValidator = ValueNotifier<Set>({});
+    loginObj.textValidator = ValueNotifier(0);
+    loginObj.pwdResetValidator = ValueNotifier<Set>({});
     Model.currentContext = context;
   }
 
   @override
   void dispose() {
-    LoginLogic.textValidator.dispose();
-    LoginLogic.pwdResetValidator.dispose();
+    loginObj.textValidator.dispose();
+    loginObj.pwdResetValidator.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    Model.contextQueue.addLast(context);
+    Model.currentContext = context;
     Model.currentRoute = "login";
     Model.deviceWidth = MediaQuery.of(context).size.width;
     Model.deviceHeight = MediaQuery.of(context).size.height;
@@ -73,7 +77,7 @@ class _LoginPage extends State<LoginPage> {
                   ),
                   Divider(),
                   ValueListenableBuilder(
-                    valueListenable: LoginLogic.pwdResetValidator,
+                    valueListenable: loginObj.pwdResetValidator,
                     builder: (BuildContext context, Set value1, Widget? child) {
                       return Padding(
                         padding: EdgeInsets.only(left: 10, right: 10),
@@ -81,7 +85,7 @@ class _LoginPage extends State<LoginPage> {
                           maxLength: 6,
                           onChanged: (input) {
                             loginObj.otp = input;
-                            LoginLogic.pwdResetValidator.value.remove(4);
+                            loginObj.pwdResetValidator.value.remove(4);
                             loginObj.currentField.add(4);
                           },
                           keyboardType: TextInputType.number,
@@ -121,14 +125,14 @@ class _LoginPage extends State<LoginPage> {
                   ),
                   Divider(),
                   ValueListenableBuilder(
-                    valueListenable: LoginLogic.pwdResetValidator,
+                    valueListenable: loginObj.pwdResetValidator,
                     builder: (BuildContext context, Set value1, Widget? child) {
                       return Padding(
                         padding: EdgeInsets.only(left: 10, right: 10),
                         child: TextFormField(
                           onChanged: (input) {
                             loginObj.password1 = input;
-                            LoginLogic.pwdResetValidator.value.remove(5);
+                            loginObj.pwdResetValidator.value.remove(5);
                             loginObj.currentField.add(5);
                           },
                           decoration: InputDecoration(
@@ -165,7 +169,7 @@ class _LoginPage extends State<LoginPage> {
                   ),
                   Divider(),
                   ValueListenableBuilder(
-                    valueListenable: LoginLogic.pwdResetValidator,
+                    valueListenable: loginObj.pwdResetValidator,
                     builder: (BuildContext context, Set value1, Widget? child) {
                       print(value1);
                       return Padding(
@@ -173,7 +177,7 @@ class _LoginPage extends State<LoginPage> {
                         child: TextFormField(
                           onChanged: (input) {
                             loginObj.password2 = input;
-                            LoginLogic.pwdResetValidator.value.remove(6);
+                            loginObj.pwdResetValidator.value.remove(6);
                             loginObj.currentField.add(6);
                           },
                           decoration: InputDecoration(
@@ -216,16 +220,16 @@ class _LoginPage extends State<LoginPage> {
                   Divider(),
                   ElevatedButton(
                     onPressed: () {
-                      LoginLogic.pwdResetValidator.value = {};
+                      loginObj.pwdResetValidator.value = {};
                       if (loginObj.otp.isEmpty) {
-                        LoginLogic.pwdResetValidator.value.add(4);
+                        loginObj.pwdResetValidator.value.add(4);
                       }
 
                       if (loginObj.password1.isEmpty) {
-                        LoginLogic.pwdResetValidator.value.add(5);
+                        loginObj.pwdResetValidator.value.add(5);
                       }
                       if (loginObj.password2.isEmpty) {
-                        LoginLogic.pwdResetValidator.value.add(6);
+                        loginObj.pwdResetValidator.value.add(6);
                       }
                       if (loginObj.otp.isNotEmpty &&
                           loginObj.password1.isNotEmpty &&
@@ -286,14 +290,7 @@ class _LoginPage extends State<LoginPage> {
                 alignment: Alignment.center,
                 child: IconButton(
                   alignment: Alignment.center,
-                  onPressed: () {
-                    /* Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (BuildContext context) => RegisterPage(),
-                      ),
-                    ); */
-                  },
+                  onPressed: () {},
                   icon: Icon(Icons.account_circle_sharp),
                 ),
               ),
@@ -317,14 +314,14 @@ class _LoginPage extends State<LoginPage> {
               children: [
                 Divider(),
                 ValueListenableBuilder(
-                    valueListenable: LoginLogic.textValidator,
+                    valueListenable: loginObj.textValidator,
                     builder: (BuildContext context, value1, Widget? child) {
                       return Padding(
                         padding: EdgeInsets.only(left: 10, right: 10),
                         child: TextFormField(
                           onChanged: (input) {
                             Model.username = input;
-                            LoginLogic.textValidator.value = 0;
+                            loginObj.textValidator.value = 0;
                           },
                           keyboardType: TextInputType.visiblePassword,
                           decoration: InputDecoration(
@@ -355,14 +352,14 @@ class _LoginPage extends State<LoginPage> {
                 if (loginObj.usernameOnly == false) Divider(),
                 if (loginObj.usernameOnly == false)
                   ValueListenableBuilder(
-                      valueListenable: LoginLogic.textValidator,
+                      valueListenable: loginObj.textValidator,
                       builder: (BuildContext context, value1, Widget? child) {
                         return Padding(
                           padding: EdgeInsets.only(left: 10, right: 10),
                           child: TextFormField(
                             onChanged: (input) {
                               loginObj.password = input;
-                              LoginLogic.textValidator.value = 0;
+                              loginObj.textValidator.value = 0;
                             },
                             keyboardType: TextInputType.visiblePassword,
                             decoration: InputDecoration(
@@ -403,7 +400,7 @@ class _LoginPage extends State<LoginPage> {
                             Model.diableLogin = true;
                             bool nullInput = loginObj.validateInput();
                             if (nullInput == false) {
-                              BLoC.showProgressIndicator(context);
+                              BLoC.showProgressIndicator();
                               await loginObj.loginSock();
                             } else {
                               Model.diableLogin = false;

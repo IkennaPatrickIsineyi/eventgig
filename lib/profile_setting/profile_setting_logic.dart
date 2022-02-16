@@ -3,12 +3,12 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:experi/showroom/showroom_logic.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:experi/model.dart';
 import 'package:experi/BLoC.dart' as BLoC;
-import 'package:experi/showroom/showroom_page.dart';
 
 import 'package:http/http.dart' as http;
 
@@ -81,7 +81,7 @@ class ProfileLogic {
       print(address);
       print(content);
 
-      BLoC.showProgressIndicator(Model.currentContext);
+      BLoC.showProgressIndicator();
 
       BLoC.sendMsg(content);
 
@@ -92,21 +92,23 @@ class ProfileLogic {
           res = res['result'];
           if (res['status'] == 'hacker') {
             print('hacker');
-            BLoC.nullInputDialog(
-                Model.currentContext, "Failed hack attempt", 'Oops');
+            BLoC.nullInputDialog("Failed hack attempt", 'Oops');
 
             Navigator.pushNamedAndRemoveUntil(
-                Model.currentContext, '/loginpage', (route) => false);
+                    Model.currentContext, '/loginpage', (route) => false)
+                .then((value) {
+              //remove/pop dialog's context from stack since the dialog has been popped
+              if (Model.contextQueue.isNotEmpty) {
+                Model.contextQueue.removeLast();
+
+                //set current context variable to the next context on the stack
+                Model.currentContext = Model.contextQueue.last;
+              }
+            });
           } else if (res['status'] == 'available') {
             print('changes saved');
             BLoC.snackMsg(Model.currentContext, "Changes Saved");
             BLoC.reloadHome();
-            /*  Navigator.pushAndRemoveUntil(
-              Model.currentContext,
-              MaterialPageRoute(
-                builder: (context) => ReloadHomePage(),
-              ),
-              (route) => false); */
           }
           Model.socketNotifier.removeListener(liste);
         }
@@ -127,7 +129,7 @@ class ProfileLogic {
     print(address);
     print(content);
 
-    BLoC.showProgressIndicator(Model.currentContext);
+    BLoC.showProgressIndicator();
 
     BLoC.sendMsg(content);
 
@@ -138,23 +140,32 @@ class ProfileLogic {
         res = res['result'];
         if (res['status'] == 'hacker') {
           print('hacker');
-          BLoC.nullInputDialog(
-              Model.currentContext, "Failed hack attempt", 'Oops');
+          BLoC.nullInputDialog("Failed hack attempt", 'Oops');
 
           Navigator.pushNamedAndRemoveUntil(
-              Model.currentContext, '/loginpage', (route) => false);
+                  Model.currentContext, '/loginpage', (route) => false)
+              .then((value) {
+            //remove/pop dialog's context from stack since the dialog has been popped
+            if (Model.contextQueue.isNotEmpty) {
+              Model.contextQueue.removeLast();
+
+              //set current context variable to the next context on the stack
+              Model.currentContext = Model.contextQueue.last;
+            }
+          });
         } else if (res['status'] == 'valid') {
           print('Showroom retrieved');
           print(res['showroom']);
-          //return res['showroom'];
-          //showroomPics = res['showroom'];
+          ShowroomLogic.setter(res['showroom']);
+          Navigator.pushNamed(Model.currentContext, '/showroom').then((value) {
+            //remove/pop dialog's context from stack since the dialog has been popped
+            if (Model.contextQueue.isNotEmpty) {
+              Model.contextQueue.removeLast();
 
-          Navigator.push(
-            Model.currentContext,
-            MaterialPageRoute(
-              builder: (context) => Showroom(res['showroom']),
-            ),
-          );
+              //set current context variable to the next context on the stack
+              Model.currentContext = Model.contextQueue.last;
+            }
+          });
         }
         Model.socketNotifier.removeListener(liste);
       }
@@ -164,7 +175,7 @@ class ProfileLogic {
   }
 
   Future<void> changePicture() async {
-    BLoC.showProgressIndicator(Model.currentContext);
+    BLoC.showProgressIndicator();
     Uint8List? file;
     String fileN;
     String? fileEx;
@@ -227,8 +238,6 @@ class ProfileLogic {
                     (value) async {
                       await http.Response.fromStream(value).then(
                         (value) {
-                          //  Navigator.pop(Model.currentContext);
-
                           print(value.statusCode);
                           var result = jsonDecode(value.body);
                           if (result["status"] == "ok") {
@@ -255,7 +264,6 @@ class ProfileLogic {
                                 .then(
                               (value) {
                                 resp = value;
-                                //  Navigator.pop(Model.currentContext);
 
                                 if (resp['value'] == 'OK') {
                                   print('saved at heroku');
@@ -273,10 +281,6 @@ class ProfileLogic {
                                   Model.domain + 'img/' + 'default.png'
                                   : Model.domain + 'img/' + profilePic,
                             ).evict();
-                            // Navigator.pop(Model.currentContext);
-                            /* PaintingBinding.instance!.imageCache!
-                                              .clear(); */
-                            //pictureChanged.value++;
 
                             BLoC.snackMsg(
                                 Model.currentContext, "Picture saved");
@@ -311,7 +315,6 @@ class ProfileLogic {
                 (value) async {
                   await http.Response.fromStream(value).then(
                     (value) {
-                      // Navigator.pop(Model.currentContext);
                       print(value.statusCode);
                       print(value.body);
                       if (jsonDecode(value.body)['status'] == 'ok') {
@@ -329,7 +332,7 @@ class ProfileLogic {
 
                         var resp;
 
-                        BLoC.showProgressIndicator(Model.currentContext);
+                        BLoC.showProgressIndicator();
 
                         BLoC.sendRequest(Model.httpC, address, contentP).then(
                           (value) {
@@ -377,7 +380,7 @@ class ProfileLogic {
     print(address);
     print(content);
 
-    BLoC.showProgressIndicator(Model.currentContext);
+    BLoC.showProgressIndicator();
 
     BLoC.sendMsg(content);
 
@@ -388,8 +391,7 @@ class ProfileLogic {
         res = res['result'];
         if (res['status'] == 'hacker') {
           print('hacker');
-          BLoC.nullInputDialog(
-              Model.currentContext, "Failed hack attempt", 'Oops');
+          BLoC.nullInputDialog("Failed hack attempt", 'Oops');
 
           Navigator.pushNamedAndRemoveUntil(
               Model.currentContext, '/loginpage', (route) => false);
@@ -397,12 +399,6 @@ class ProfileLogic {
           print('changes saved');
           BLoC.snackMsg(Model.currentContext, "Changes Saved");
           BLoC.reloadHome();
-          /* Navigator.pushAndRemoveUntil(
-            Model.currentContext,
-            MaterialPageRoute(
-              builder: (context) => ReloadHomePage(),
-            ),
-            (route) => false); */
         }
         Model.socketNotifier.removeListener(liste);
       }

@@ -32,7 +32,7 @@ class NotificationLogic {
 
     print(address);
     print(content);
-    BLoC.showProgressIndicator(Model.currentContext);
+    BLoC.showProgressIndicator();
 
     //if (clickLocked == false)
     BLoC.sendMsg(content);
@@ -54,7 +54,16 @@ class NotificationLogic {
           BLoC.snackMsg(Model.currentContext, "hack attempt failed");
 
           Navigator.pushNamedAndRemoveUntil(
-              Model.currentContext, '/loginpage', (route) => false);
+                  Model.currentContext, '/loginpage', (route) => false)
+              .then((value) {
+            //remove/pop dialog's context from stack since the dialog has been popped
+            if (Model.contextQueue.isNotEmpty) {
+              Model.contextQueue.removeLast();
+
+              //set current context variable to the next context on the stack
+              Model.currentContext = Model.contextQueue.last;
+            }
+          });
         } else if (result['status'] == 'invalid') {
           print('Invalid request');
           BLoC.snackMsg(Model.currentContext, "Invalid request");

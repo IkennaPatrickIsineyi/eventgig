@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, use_key_in_widget_constructors, prefer_const_constructors_in_immutables, no_logic_in_create_state, avoid_print, deprecated_member_use, unnecessary_cast
+// ignore_for_file:  avoid_print, deprecated_member_use, unnecessary_cast
 
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:experi/showroom/showroom_logic.dart';
@@ -6,28 +6,28 @@ import 'package:flutter/material.dart';
 import 'package:experi/model.dart';
 
 class Showroom extends StatefulWidget {
-  Showroom(this.pictures);
-  final List pictures;
+  const Showroom({Key? key}) : super(key: key);
+
   @override
-  _Showroom createState() => _Showroom(pictures);
+  _Showroom createState() => _Showroom();
 }
 
 class _Showroom extends State<Showroom> {
-  _Showroom(this.pictures);
-  final List pictures;
-
+  final showroomObj = ShowroomLogic();
   @override
   Widget build(BuildContext context) {
+    Model.contextQueue.addLast(context);
+    Model.currentContext = context;
     print('in');
     Model.currentRoute = "Showroom";
     Model.prefs.setString("currentRoute", "Showroom");
 
-    if (refreshed == false) {
-      showroomPics = pictures;
+    if (showroomObj.refreshed == false) {
+      showroomObj.showroomPics = ShowroomLogic.pictures;
     }
     print('done');
 
-    if (showroomPics.isNotEmpty) {
+    if (showroomObj.showroomPics.isNotEmpty) {
       return Scaffold(
         appBar: AppBar(
           brightness: Brightness.dark,
@@ -38,12 +38,12 @@ class _Showroom extends State<Showroom> {
                   onPressed: () {
                     Navigator.of(context).maybePop();
                   },
-                  padding: EdgeInsets.only(left: 8),
+                  padding: const EdgeInsets.only(left: 8),
                   color: Colors.black,
-                  icon: Icon(Icons.arrow_back))
+                  icon: const Icon(Icons.arrow_back))
               : null,
           title: Column(
-            children: [
+            children: const [
               Text(
                 "eventGig",
                 style: TextStyle(fontWeight: FontWeight.bold),
@@ -59,18 +59,18 @@ class _Showroom extends State<Showroom> {
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             print('calling addPic');
-            addPic();
+            showroomObj.addPic();
           },
-          child: Icon(Icons.add),
+          child: const Icon(Icons.add),
         ),
         body: Container(
-          padding: EdgeInsets.all(10),
+          padding: const EdgeInsets.all(10),
           child: SingleChildScrollView(
             child: Column(
               children: [
                 CarouselSlider(
-                  items: (showroomPics.isNotEmpty)
-                      ? showroomPics
+                  items: (showroomObj.showroomPics.isNotEmpty)
+                      ? showroomObj.showroomPics
                           .map(
                             (pic) => Image.network(
                               Model.domain + 'img/' + pic[1],
@@ -88,8 +88,8 @@ class _Showroom extends State<Showroom> {
                         ],
                   options: CarouselOptions(
                       onScrolled: (value) {
-                        currentPosition = value as int;
-                        print(currentPosition);
+                        showroomObj.currentPosition = value as int;
+                        print(showroomObj.currentPosition);
                       },
                       enableInfiniteScroll: false),
                 ),
@@ -99,10 +99,11 @@ class _Showroom extends State<Showroom> {
                     IconButton(
                       onPressed: () {
                         print('calling deletePic');
-                        deletePic((showroomPics[currentPosition as int][0])
+                        showroomObj.deletePic((showroomObj.showroomPics[
+                                showroomObj.currentPosition as int][0])
                             .toString());
                       },
-                      icon: Icon(Icons.delete),
+                      icon: const Icon(Icons.delete),
                     ),
                   ],
                 )
@@ -122,12 +123,12 @@ class _Showroom extends State<Showroom> {
                   onPressed: () {
                     Navigator.of(context).maybePop();
                   },
-                  padding: EdgeInsets.only(left: 8),
+                  padding: const EdgeInsets.only(left: 8),
                   color: Colors.black,
-                  icon: Icon(Icons.arrow_back))
+                  icon: const Icon(Icons.arrow_back))
               : null,
           title: Column(
-            children: [
+            children: const [
               Text(
                 "eventGig",
                 style: TextStyle(fontWeight: FontWeight.bold),
@@ -143,11 +144,11 @@ class _Showroom extends State<Showroom> {
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             print('calling addPic');
-            addPic();
+            showroomObj.addPic();
           },
-          child: Icon(Icons.add),
+          child: const Icon(Icons.add),
         ),
-        body: Text(''),
+        body: const Text(''),
       );
     }
   }

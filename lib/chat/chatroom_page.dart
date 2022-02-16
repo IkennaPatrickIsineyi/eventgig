@@ -81,6 +81,8 @@ class _Chatroom extends State<Chatroom> {
   @override
   Widget build(BuildContext context) {
     //currentRoute = (ChatRoom.single == true) ? "ChatroomSingle" : "ChatroomMulti";
+    Model.contextQueue.addLast(context);
+    Model.currentContext = context;
     Model.modif = false;
     print("chatroom loaded");
 
@@ -575,11 +577,7 @@ class _Chatroom extends State<Chatroom> {
         ),
         bottomNavigationBar: Container(
           color: Colors.black,
-          padding: /*  (defaultTargetPlatform == TargetPlatform.linux ||
-                  defaultTargetPlatform == TargetPlatform.macOS ||
-                  defaultTargetPlatform == TargetPlatform.windows)
-              ? EdgeInsetsDirectional.zero
-              : */
+          padding:
               EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -609,20 +607,7 @@ class _Chatroom extends State<Chatroom> {
                 onPressed: () {
                   if (chatObj.newMsg.isNotEmpty) {
                     print('calling sendMesg');
-                    //int indx = Model.chats.length;
 
-                    //int k = Random().nextInt(1000000000);
-                    /*  (Model.chats.length == 0)
-                        ? Model.chats.add([
-                            "",
-                            DateTime.now().day.toString(),
-                            Model.username,
-                            ChatRoom.userProfile[0],
-                            chatObj.newMsg,
-                            0,
-                            Random().nextInt(1000000000),
-                          ])
-                        : */
                     Model.chats.insert(0, [
                       "",
                       DateTime.now().day.toString(),
@@ -632,19 +617,11 @@ class _Chatroom extends State<Chatroom> {
                       0,
                       Random().nextInt(1000000000),
                     ]);
-                    // setState(() {
-
-                    // chatObj.newMsg = '';
                     chatObj.refreshed = true;
-                    //int x = Model.selected.value;
-                    // Model.selected.value = x + 1;
-                    // });
+
                     chatObj.textController.clear();
                     setState(() {});
-                    chatObj.sendMesg(
-                        /*  (Model.chats.length == 0) ? */ Model
-                            .chats.length /* : Model.chats.length - 1 */,
-                        chatObj.newMsg,
+                    chatObj.sendMesg(Model.chats.length, chatObj.newMsg,
                         ChatRoom.userProfile[0]);
                   }
                 },
